@@ -7,7 +7,7 @@ DEBUG=true
 
 function get_videos_IDs () { # ( page ) 
 	local page=$1
-	echo -e $page | tr "," "\n" | grep '"url":"/watch?v=' | grep -v "&" | uniq | cut -d "=" -f2 | tr -d '"'
+	echo -e "$page" | tr "," "\n" | grep '"url":"/watch?v=' | grep -v "&" | uniq | cut -d "=" -f2 | tr -d '"'
 }
 
 function get_video_metadata () { # ( page )
@@ -22,7 +22,7 @@ function process_video_link () { # ( link videoID )
 	local url=$link$videoID
 	$DEBUG && echo "url: $url"
 	local page=$(wget "$url" -q -O -)
-	#echo -e "$page"
+	echo -e "$page " > new_page.html
 	
 	# remove from togo
 	unset togo[$videoID]
@@ -32,7 +32,7 @@ function process_video_link () { # ( link videoID )
 	IDs=$(get_videos_IDs $page)
     $DEBUG && echo -e "$IDs"
 	
-	for ID in IDs; do	
+	for ID in $IDs; do	
 		# is ID in completed?
 		if [ ${complete[$ID]+_} ]; then
 			$DEBUG && echo -e "$ID already copmleted."
