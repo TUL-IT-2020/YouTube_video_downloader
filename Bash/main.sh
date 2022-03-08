@@ -2,46 +2,20 @@
 # By Pytel
 
 source ./video.sh
+source ./lib.sh
 
 DEBUG=true
 #DEBUG=false
 
-function get_videos_IDs () { # ( page ) 
-	local page="$1"
-	echo -e "$page" | tr "," "\n" | grep '"url":"/watch?v=' | grep -v "&" | sort | uniq | cut -d "=" -f2 | tr -d '"'
+VERBOSE=true
+
+function get_page () { # ( url )
+	wget "$url" -q -O -
 }
 
-function get_video_metadata () { # ( video page )
-	declare -n video_l=$1
-	local page=$2
-	# TODO
-	local videoDetails=$(echo -e "$page" | tr "}" "\n" | grep -m 1 "videoDetails" | tr "," "\n" | tr "{" "\n" )
-	video_l[id]=$(echo -e "$videoDetails" | grep "videoId" | cut -d ":" -f2)
-	video_l[name]=$(echo -e "$videoDetails" | grep "title" | cut -d ":" -f2)
-	video_l[channelId]=$(echo -e "$videoDetails" | grep "channelId" | cut -d ":" -f2)
-	video_l[captions]=$(echo -e "$page" | tr "]" "\n" | grep '"captions":' | tr "}" "\n" | tr "," "\n" | grep "language" | cut -d ":" -f 2 | tr -d '"' | tr "\n" " ")
-	# echo -e "$page" | tr "]" "\n" | grep '"captions":' | tr "}" "\n" | tr "," "\n" | grep "simpleText" | cut -d ":" -f 3 | tr -d '"
-
-}
-
-function process_video_link () { # ( link videoID )
-	local link="$1"
-	local videoID="$2"
-	local url=$link$videoID
-	$DEBUG && echo "url: $url"
-	local page=$(wget "$url" -q -O -)
-	#echo -e "$page " > new_page.html
-	
-	# remove from togo
-	unset togo[$videoID]
-	# add completed + meta data
-	get_video_metadata video "$page"
-	completed[$videoID]=$(rof video.to_string)
-	$DEBUG && echo -e "$(rof video.to_string)"
-
-	IDs=$(get_videos_IDs "$page")
-    $DEBUG && echo -e "$IDs"
-	
+function sort_and_store_videoIDs () { # ( IDs )
+	local IDs=$1
+	$DEBUG && echo -e "$IDs"
 	for ID in $IDs; do	
 		# is ID in completed?
 		if [ ${completed[$ID]+_} ]; then
@@ -52,9 +26,33 @@ function process_video_link () { # ( link videoID )
 		# is ID in togo?
 		if [ ! ${togo[$ID]+_} ]; then
 			$DEBUG && echo -e "Adding: $ID -> to go."
-			togo[$ID]="to go"
+			togo[$ID]=true
 		fi
 	done
+}
+
+function process_video_link () { # ( link videoID )
+	local link="$1"
+	local videoID="$2"
+	local url=$link$videoID
+	$DEBUG && echo "url: $url"
+	local page=$(get_page $url)
+	#echo -e "$page" > page.html
+	
+	# remove from togo
+	unset togo[$videoID]
+	# get meta data
+	get_video_metadata video "$page"
+	$DEBUG && echo -e "$(rof video.to_string)"
+	# add to completed
+	completed[$videoID]=$(rof video.to_string)
+	# store to csv
+	store_to_csv "$(rof video.to_string)" "$fileName"
+
+	IDs=$(get_videos_IDs "$page")
+    $DEBUG && echo -e "$IDs"
+	
+	sort_and_store_videoIDs "$IDs"
 
 }
 
@@ -64,14 +62,14 @@ function process_search () { # ( link search )
 	local url=$link$search
 }
 
-function store_to_csv () { # ( hashMap fileName ) 
+function store_hashMap_to_csv () { # ( hashMap fileName ) 
 	declare -n hashMap=$1
 	local fileName=$2
 	local file=""
 	
 	if [ -f $fileName ]; then
 		file=$(cat $fileName)
-else
+	else
 		touch $fileName
 		echo $(get video.csv_heading) > $fileName
 	fi
@@ -95,14 +93,24 @@ declare -A video
 new video = Video
 
 link="https://www.youtube.com/watch?v="
-videoID="fbjFofNGHks"
-videoID="FIWE0hjrDNE"
-url=$link$videoID
-file="data.csv"
+togo[fbjFofNGHks]=true
+togo[FIWE0hjrDNE]=true
 
-process_video_link $link $videoID
+fileName="data.csv"
+if [ ! -f $fileName ]; then
+	touch $fileName
+	echo $(get video.csv_heading) > $fileName
+fi
 
-store_to_csv completed $file
+index=0
+while [ "${#togo[@]}" -ne 0 ]; do
+	for videoID in ${!togo[@]}; do
+		index=$(( index + 1 ))
+		$VERBOSE && echo "$index"
+		process_video_link $link $videoID
+	done
+	break
+done
 
 # pars Json
 
