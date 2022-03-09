@@ -2,9 +2,9 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,vim,python
 
 ### My Files ###
-Bash/*.csv
-Bash/*.json
-Bash/*.html
+*.csv
+*.json
+*.html
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
