@@ -48,9 +48,13 @@ function test_store_to_csv () {
         "fbjFofNGHks;Fossil Hybrid HR Q&A;;en ;UCRyUxNpQZBXen_hgkAMRTWw"
     )
     local fileName="test_file.csv"
+    touch $fileName
+
     for string in "${strings[@]}"; do
         store_to_csv "$string" $fileName
     done
-    #rm $fileName
+    echo ""
+    #cat $fileName
+    rm $fileName
     return 0
 }

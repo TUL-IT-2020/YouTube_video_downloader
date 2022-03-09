@@ -31,7 +31,7 @@ function store_to_csv () { # ( string fileName )
 
 	if [ $(cat "$fileName" | grep -c -- "$key") -ge 1 ]; then
         $DEBUG && echo "Editing line"
-		sed "s/$key.*/$string/" "$fileName"
+		sed -i "s/${key}.*/${string}/" "$fileName"
 	else
         $DEBUG && echo "Adding new line"
 		echo $string >> $fileName

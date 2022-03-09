@@ -113,6 +113,6 @@ while [ "${#togo[@]}" -ne 0 ]; do
 done
 
 # pars Json
-
+# ISO 639 formát obsahuje metadata o vide včetně jazyka
 # END
 
