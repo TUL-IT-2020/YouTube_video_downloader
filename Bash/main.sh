@@ -4,8 +4,8 @@
 source ./video.sh
 source ./lib.sh
 
-DEBUG=true
-#DEBUG=false
+#DEBUG=true
+DEBUG=false
 
 VERBOSE=true
 #VERBOSE=false
@@ -15,7 +15,15 @@ function printHelp () {
     echo -e "  -h, --help \t\t print this text"
 	echo -e "  -d, --debug\t\t enable debug output"
 	echo -e "  -v, --verbose\t\t increase verbosity"
+	echo -e "  -c, --clean \t\t clean unneeded files"
     echo -e ""
+}
+
+function cleanup() {
+	rm $log
+	rm downloader.log
+	rm ${pages}*
+	rm $pipe
 }
 
 function sort_and_store_videoIDs () { # ( IDs )
@@ -123,7 +131,7 @@ togo[LKC0NG0g2ek]=true
 pages="pages/"
 pipe="pipe"
 fileName="data.csv"
-log=".log"
+log="main.log"
 
 # parse input
 $DEBUG && echo "Args: [$@]"
@@ -136,6 +144,7 @@ while [ $# -gt 0 ] ; do
 		-h | --help) 	printHelp; exit 2;;
 		-d | --debug) 	DEBUG=true;;
 		-v | --verbose) VERBOSE=true;;
+		-c | --clean)	cleanup; exit 0;;
 		*) echo -e "Unknown opt: $arg";;
 	esac
 
@@ -179,7 +188,7 @@ while [ "${#togo[@]}" -ne 0 ]; do
 		# get videoID from pages
 		videoID=$(ls $pages | grep -m 1 ".done" | cut -d "." -f 1)
 		$DEBUG && echo "videoID: $videoID"
-		process_video_link $pages $videoID
+		process_video_link $pages $videoID # 2> $log
 
 		# remove files
 		rm ${pages}${videoID}

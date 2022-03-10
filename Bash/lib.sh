@@ -14,7 +14,7 @@ function get_videos_IDs () { # ( page )
 function get_video_metadata () { # ( video page )
 	declare -n video_l=$1
 	local page=$2
-	if [ -z $page ]; then 
+	if [ -z "$page" ]; then 
 		echo -e "ERROR: no page to parse!" 1>&2
 		return 1 
 	fi
