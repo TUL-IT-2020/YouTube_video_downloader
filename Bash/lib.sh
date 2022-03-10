@@ -14,6 +14,10 @@ function get_videos_IDs () { # ( page )
 function get_video_metadata () { # ( video page )
 	declare -n video_l=$1
 	local page=$2
+	if [ -z $page ]; then 
+		echo -e "ERROR: no page to parse!" 1>&2
+		return 1 
+	fi
 	local videoDetails=$(echo -e "$page" | tr "}" "\n" | grep -m 1 "videoDetails" | tr "," "\n" | tr "{" "\n" )
 	video_l[id]=$(echo -e "$videoDetails" | grep "videoId" | cut -d ":" -f2 | tr -d '"')
 	video_l[name]=$(echo -e "$videoDetails" | grep "title" | cut -d ":" -f2 | tr -d '"')

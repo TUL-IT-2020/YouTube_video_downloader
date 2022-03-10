@@ -21,8 +21,11 @@ function printHelp () {
 function download () {
     local name=$1
     local url=$2
+	$VERBOSE && echo -e "Downloading: $url"
     ./download_and_store.sh -s -f "pages" -n "$name" -l "$url" > /dev/null 2>&1 &
 }
+
+time=0.1
 
 # parse input
 $DEBUG && echo "Args: [$@]"
@@ -43,15 +46,17 @@ while [ $# -gt 0 ] ; do
 	arg=$1
 done
 
-read command args
 while true; do
-    $DEBUG && echo -e "$command, $args"
-    case $command in 
-        exit)       exit 0;;
-        download)   download $args;;
-        *)          echo -e "Unknown command: $command";;
-    esac
-    read command args
+	if read command args; then
+		$DEBUG && echo -e "$command, $args"
+		case $command in 
+			exit)       exit 0;;
+			download)   download $args;;
+			*)          $VERBOSE && echo -e "Unknown command: $command";;
+		esac
+	fi
+	sleep $time
 done
 
+$VERBOSE && echo -e "Done"
 # END
