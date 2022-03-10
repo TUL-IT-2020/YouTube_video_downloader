@@ -57,7 +57,7 @@ function test_store_to_csv () {
     for string in "${strings[@]}"; do
         store_to_csv "$string" $fileName
     done
-    echo ""
+    echo "file: $fileName"
     cat $fileName
     rm $fileName
     return 0

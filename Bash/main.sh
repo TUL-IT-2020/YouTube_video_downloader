@@ -16,14 +16,37 @@ function printHelp () {
 	echo -e "  -d, --debug\t\t enable debug output"
 	echo -e "  -v, --verbose\t\t increase verbosity"
 	echo -e "  -c, --clean \t\t clean unneeded files"
+	echo -e "  -s, --seed \t\t file with seeds"
     echo -e ""
 }
 
-function cleanup() {
+function cleanup () {
 	rm $log
 	rm downloader.log
 	rm ${pages}*
 	rm $pipe
+}
+
+function setSeed () { # ( file )
+	# empty argument
+	if [ -z "$1" ]; then
+		echo -e "${RED}ERROR: ${NC}empty argument!" 1>&2
+		return 1
+	fi
+
+	local file="$1"
+
+	# do folder exist?
+	if [ ! -f $file ]; then
+		$VERBOSE && echo "${RED}ERROR: ${Blue}$file${NC} do not exist!" 1>&2
+		return 2
+	fi
+
+	for ID in $(cat $file); do
+		togo[$ID]=true
+	done
+
+	return 0
 }
 
 function sort_and_store_videoIDs () { # ( IDs )
@@ -114,20 +137,8 @@ declare -A video
 new video = Video
 
 link="https://www.youtube.com/watch?v="
-togo[FIWE0hjrDNE]=true
-togo[LKC0NG0g2ek]=true
-#togo[cZzFJQVoa38]=true
-#togo[dmkrZ1UGGJg]=true
-#togo[d1R4wbuXFII]=true
-#togo[FIWE0hjrDNE]=true
-#togo[gj4x9YaUATU]=true
-#togo[Gr14EuEHp8Y]=true
-#togo[GVsUOuSjvcg]=true
-#togo[hvLwWhc2o3Q]=true
-#togo[hwvub3BHDc0]=true
-#togo[MIKwCTPDXO8]=true
-#togo[P2rjxK9aZ24]=true
 
+iter=100
 pages="pages/"
 pipe="pipe"
 fileName="data.csv"
@@ -145,6 +156,7 @@ while [ $# -gt 0 ] ; do
 		-d | --debug) 	DEBUG=true;;
 		-v | --verbose) VERBOSE=true;;
 		-c | --clean)	cleanup; exit 0;;
+		-s | --seed)	shift; setSeed "$1" || exit 3;;
 		*) echo -e "Unknown opt: $arg";;
 	esac
 
@@ -163,15 +175,18 @@ fi
 if [ ! -p $pipe ]; then
     mkfifo $pipe
 fi
-./page_downloader.sh -v < $pipe &> downloader.log &
+./page_downloader.sh < $pipe &> downloader.log &
 
 index=0
 while [ "${#togo[@]}" -ne 0 ]; do
 
 	# download pages
+	i=1
 	for videoID in ${!togo[@]}; do
-		# send id nad link to pipe
+		# send id and link to pipe
 		echo "download" $videoID ${link}$videoID > $pipe
+		i=$(( i + 1 ))
+		if [ $i -gt $iter ]; then break; fi
 	done
 
 	# init sleep
@@ -179,7 +194,7 @@ while [ "${#togo[@]}" -ne 0 ]; do
 		sleep 0.1
 	done
 	#sleep 1
-
+	exit 0
 	# parse pages
 	while [ $(ls "$pages" | grep ".done" | wc -l) -gt 0 ]; do
 		index=$(( index + 1 ))
