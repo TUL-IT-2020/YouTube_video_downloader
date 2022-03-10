@@ -5,6 +5,7 @@
 *.csv
 *.json
 *.html
+**/pages/*
 
 ### Python ###
 # Byte-compiled / optimized / DLL files

@@ -1,6 +1,11 @@
 #!/bin/bash
 # By Pytel
 
+function get_page () { # ( url )
+	local url=$1
+	wget "$url" -q -O -
+}
+
 function get_videos_IDs () { # ( page ) 
 	local page="$1"
 	echo -e "$page" | tr "," "\n" | grep '"url":"/watch?v=' | grep -v "&" | sort | uniq | cut -d "=" -f2 | tr -d '"'

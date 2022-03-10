@@ -1,7 +1,7 @@
 #!/bin/bash
 # By Pytel
 
-#DEBUG=true
+DEBUG=true
 #DEBUG=false
 
 source ./video.sh
@@ -45,7 +45,11 @@ function test_store_to_csv () {
     local strings=( 
         "FIWE0hjrDNE;It’s gonna be a massacre???;;en ;UCeeFfhMcJa1kjtfZAGskOCA" 
         "FIWE0hjrDNE;It’s gonna be a massacre!!!;;en zh-Hans fil fr de nl-NL es ;UCeeFfhMcJa1kjtfZAGskOCA" 
+        "-NZ7ScAsGHI;Nazev;cs ;"
+        "-NZ7ScAsGHI;Novy nazev;cs ;"
         "fbjFofNGHks;Fossil Hybrid HR Q&A;;en ;UCRyUxNpQZBXen_hgkAMRTWw"
+        "MJ0m9fYs-l8;Ahoj"
+        "MJ0m9fYs-l8;' '"
     )
     local fileName="test_file.csv"
     touch $fileName
@@ -54,7 +58,7 @@ function test_store_to_csv () {
         store_to_csv "$string" $fileName
     done
     echo ""
-    #cat $fileName
+    cat $fileName
     rm $fileName
     return 0
 }

@@ -10,6 +10,10 @@ DEBUG=true
 VERBOSE=true
 #VERBOSE=false
 
+function get_page () { # ( url )
+	wget "$url" -q -O -
+}
+
 function sort_and_store_videoIDs () { # ( IDs )
 	local IDs=$1
 	$DEBUG && echo -e "$IDs"
@@ -90,6 +94,7 @@ declare -A video
 new video = Video
 
 link="https://www.youtube.com/watch?v="
+#togo[fbjFofNGHks]=true
 #togo[FIWE0hjrDNE]=true
 togo[LKC0NG0g2ek]=true
 
