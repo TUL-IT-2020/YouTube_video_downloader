@@ -50,6 +50,7 @@ function test_store_to_csv () {
         "fbjFofNGHks;Fossil Hybrid HR Q&A;;en ;UCRyUxNpQZBXen_hgkAMRTWw"
         "MJ0m9fYs-l8;Ahoj"
         "MJ0m9fYs-l8;' '"
+        ";;;;"
     )
     local fileName="test_file.csv"
     touch $fileName

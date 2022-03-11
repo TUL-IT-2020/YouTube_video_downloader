@@ -93,6 +93,7 @@ function process_video_link () { # ( path videoID )
 	# store to csv
 	store_to_csv "$(rof video.to_string)" "$fileName"
 
+	# add new IDs
 	IDs=$(get_videos_IDs "$page")
     $DEBUG && echo -e "$IDs"
 	
@@ -192,11 +193,11 @@ while [ "${#togo[@]}" -ne 0 ]; do
 		fi
 	done
 
-	# init sleep
+	# wait for first download
 	while [ $(ls "$pages" | grep -m 1 ".done" | wc -l) -eq 0 ]; do
 		sleep 0.1
 	done
-	#sleep 1
+	
 	exit 0
 	# parse pages
 	while [ $(ls "$pages" | grep ".done" | wc -l) -gt 0 ]; do

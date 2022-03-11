@@ -38,8 +38,11 @@ function store_to_csv () { # ( string fileName )
         echo "key: $key"
         echo "file: $fileName"
     fi 
-	
 
+	if [ -z "$key" ]; then 
+		echo -e "ERROR: no ID!" 1>&2; return 1
+	fi
+	
 	if [ $(cat "$fileName" | grep -c -- "$key") -ge 1 ]; then
         $DEBUG && echo "Editing line"
 		sed -i "s/${key}.*/${string}/" "$fileName"
@@ -47,4 +50,5 @@ function store_to_csv () { # ( string fileName )
         $DEBUG && echo "Adding new line"
 		echo $string >> $fileName
 	fi
+	return 0
 }

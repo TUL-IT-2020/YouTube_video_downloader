@@ -20,6 +20,12 @@ Hlavní aplikace se zpusti a zadává do pojemnované roury ID videi, která má
 Take prochazi uložene soubory a parsuje je.
 
 přesunout pages do shm
+ukládat v podobě json
+práce s json
+import hledaných dat z json
+
+NoSQL databáze
+
 
 Use shuf with the -n option as shown below, to get N random lines:
 shuf -n N input > output
