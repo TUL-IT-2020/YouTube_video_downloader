@@ -19,8 +19,7 @@ Vytvoři soubor zkončil jsem a ukonči se
 Hlavní aplikace se zpusti a zadává do pojemnované roury ID videi, která má script stahnout a uložit
 Take prochazi uložene soubory a parsuje je.
 
-Co se stane, když chci změnit prazdny řadek????
-
+přesunout pages do shm
 
 Use shuf with the -n option as shown below, to get N random lines:
 shuf -n N input > output

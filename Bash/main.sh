@@ -71,7 +71,7 @@ function process_video_link () { # ( path videoID )
 	local path="$1"
 	local videoID="$2"
 	if [ -z $videoID ]; then 
-		echo -e "ERROR: no videoID pro process!" 1>&2
+		echo -e "ERROR: no videoID to process!" 1>&2
 		return 1 
 	fi
 	local file="${path}${videoID}"
@@ -81,23 +81,23 @@ function process_video_link () { # ( path videoID )
 	# remove from togo
 	unset togo[$videoID]
 	# get meta data
-	get_video_metadata video "$page"
-	# add to completed
-	completed[$videoID]=true
-	# store to csv
+	get_video_metadata video "$page" || return 1
 	$DEBUG && echo -e "$(rof video.to_string)"
-	if [ "$(rof video.to_string)" == ";;;;" ]; then
-		echo -e "ERROR: invalid videoID! $videoID" 1>&2
+	if [ "$(get video.id)" == "" ]; then
+		echo -e "ERROR: invalid videoID!" 1>&2
 		return 2
 	fi
 
+	# add to completed
+	completed[$videoID]=true
+	# store to csv
 	store_to_csv "$(rof video.to_string)" "$fileName"
 
 	IDs=$(get_videos_IDs "$page")
     $DEBUG && echo -e "$IDs"
 	
 	sort_and_store_videoIDs "$IDs"
-
+	return 0
 }
 
 function process_search () { # ( link search )
@@ -186,7 +186,10 @@ while [ "${#togo[@]}" -ne 0 ]; do
 		# send id and link to pipe
 		echo "download" $videoID ${link}$videoID > $pipe
 		i=$(( i + 1 ))
-		if [ $i -gt $iter ]; then break; fi
+		if [ $i -gt $iter ]; then 
+			$DEBUG && echo -e "Max itex."
+			break 
+		fi
 	done
 
 	# init sleep

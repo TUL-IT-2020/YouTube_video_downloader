@@ -15,7 +15,7 @@ function get_video_metadata () { # ( video page )
 	declare -n video_l=$1
 	local page=$2
 	if [ -z "$page" ]; then 
-		echo -e "ERROR: no page to parse!" 1>&2
+		echo -e "ERROR: no page to parse! $(get video.id)" 1>&2
 		return 1 
 	fi
 	local videoDetails=$(echo -e "$page" | tr "}" "\n" | grep -m 1 "videoDetails" | tr "," "\n" | tr "{" "\n" )
@@ -24,6 +24,7 @@ function get_video_metadata () { # ( video page )
 	video_l[channelId]=$(echo -e "$videoDetails" | grep "channelId" | cut -d ":" -f2 | tr -d '"')
 	video_l[captions]=$(echo -e "$page" | tr "]" "\n" | grep '"captions":' | tr "}" "\n" | tr "," "\n" | grep "language" | cut -d ":" -f 2 | tr -d '"' | tr "\n" " ")
 	# echo -e "$page" | tr "]" "\n" | grep '"captions":' | tr "}" "\n" | tr "," "\n" | grep "simpleText" | cut -d ":" -f 3 | tr -d '"
+	return 0
 }
 
 function store_to_csv () { # ( string fileName ) 
@@ -37,6 +38,7 @@ function store_to_csv () { # ( string fileName )
         echo "key: $key"
         echo "file: $fileName"
     fi 
+	
 
 	if [ $(cat "$fileName" | grep -c -- "$key") -ge 1 ]; then
         $DEBUG && echo "Editing line"
