@@ -23,7 +23,6 @@ function test_get_videos_IDs () {
 }
 
 function test_get_video_metadata () {
-    declare -A video
     new video = Video
     local fileName="page.html"
     local page=$(cat $fileName)
@@ -37,7 +36,7 @@ function test_get_video_metadata () {
         echo "valid: $valid"
         return 1
     fi
-
+    delete video
     return 0
 }
 
@@ -61,5 +60,41 @@ function test_store_to_csv () {
     echo "file: $fileName"
     cat $fileName
     rm $fileName
+    return 0
+}
+
+function test_from_string () {
+    local strings=( 
+        "FIWE0hjrDNE;It’s gonna be a massacre???;;en ;UCeeFfhMcJa1kjtfZAGskOCA" 
+        "-NZ7ScAsGHI;Nazev;cs ;"
+        "fbjFofNGHks;Fossil Hybrid HR Q&A;;en ;UCRyUxNpQZBXen_hgkAMRTWw"
+        "MJ0m9fYs-l8;Ahoj"
+        ";;;;"
+    )
+
+    instance="video"
+
+    for string in "${strings[@]}"; do
+        echo "String: $string"
+        rof Video.from_string "$instance" "$string"
+        
+        echo -e "To string: $(rof ${instance}.to_string)"
+        if [ -z $(get ${instance}.csv_heading) ]; then
+            return 1
+        fi
+        delete $instance
+        echo ""
+    done
+    return 0
+}
+
+function test_to_json () {
+    new video = Video
+    video[id]="123"
+    video[name]="halo"
+
+    get video.to_json
+    rof video.to_json
+    #return 1
     return 0
 }
