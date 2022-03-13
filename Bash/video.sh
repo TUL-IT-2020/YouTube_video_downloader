@@ -39,7 +39,7 @@ Video=(
 	jq --null-input \
   		--arg id "$(get $this.id)" \
   		--arg name "$(get $this.name)" \
-  		{"id": \$id, "name": \$name}
+  		\{"id": \$id, "name": \$name}\
 		'
 )
 
