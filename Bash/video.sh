@@ -11,6 +11,7 @@ Video=(
 	[language]=''
 	[captions]=''
 	[channelId]=''
+	[videoIds]=''
 	# get csv heading
 	[csv_heading]='id;name;language;captions;channelid'
 	[to_string]='
@@ -37,7 +38,8 @@ Video=(
   		--arg language "$(get $this.language)"
   		--arg captions "$(get $this.captions)"
   		--arg channelId "$(get $this.channelId)"
-  		"{"id": \$id, "name": \$name, "language": \$language, "captions": \$captions, "channelId": \$channelId }"
+		--arg videoIds "$(get $this.videoIds)"
+  		"{"id": \$id, "name": \$name, "language": \$language, "captions": \$captions, "channelId": \$channelId, "videoIds": \$videoIds }"
 		'
 	# ( name_instance json_string )
 	# return new object created from json
@@ -45,12 +47,13 @@ Video=(
 	local instance=$1;
 	shift; local json=$@;
 	new $instance = Video;
-	
-	sat ${instance}.id = "$(echo "$json" | jq -r ".id";
-	sat ${instance}.name = "$(echo "$json" | jq -r ".name";
-	sat ${instance}.language = "$(echo "$json" | jq -r ".language";
-	sat ${instance}.captions = "$(echo "$json" | jq -r ".captions";
-	sat ${instance}.channelId = "$(echo "$json" | jq -r ".channelId";
+
+	sat ${instance}.id = "$(echo "$json" | jq -r ".id")";
+	sat ${instance}.name = "$(echo "$json" | jq -r ".name")";
+	sat ${instance}.language = "$(echo "$json" | jq -r ".language")";
+	sat ${instance}.captions = "$(echo "$json" | jq -r ".captions")";
+	sat ${instance}.channelId = "$(echo "$json" | jq -r ".channelId")";
+	sat ${instance}.videoIds = "$(echo "$json" | jq -r ".videoIds")";
 		'
 )
 

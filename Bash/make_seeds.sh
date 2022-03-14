@@ -26,7 +26,6 @@ import hledaných dat z json
 
 NoSQL databáze
 
-
 Use shuf with the -n option as shown below, to get N random lines:
 shuf -n N input > output
 

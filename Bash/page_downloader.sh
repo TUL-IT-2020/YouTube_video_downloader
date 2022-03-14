@@ -22,7 +22,8 @@ function download () {
     local name=$1
     local url=$2
 	$VERBOSE && echo -e "Downloading: $url"
-    ./download_and_store.sh -s -f "pages" -n "$name" -l "$url" > /dev/null 2>&1 &
+    #./download_process_and_store.sh -s -p -f "pages" -n "$name" -l "$url" > /dev/null 2>&1 &
+	./download_process_and_store.sh -s -p -d -f "pages" -n "$name" -l "$url" &
 }
 
 time=0.1

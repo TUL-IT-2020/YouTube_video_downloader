@@ -151,14 +151,14 @@ function test_from_string_to_json () {
         if [ -z $(get ${instance}.csv_heading) ]; then
             return 1
         fi
-        rof video.to_json
+        $VERBOSE && rof video.to_json
         delete $instance
         echo ""
     done
     return 0
 }
 
-function from_string_over_json_to_string () {
+function test_from_string_over_json_to_string () {
     instance="video"
     for string in "${strings[@]}"; do
         echo "String: $string"
@@ -166,15 +166,17 @@ function from_string_over_json_to_string () {
         
         echo -e "To string: $(rof ${instance}.to_string)"
         if [ -z $(get ${instance}.csv_heading) ]; then
+            echo -e "Empty: $(get ${instance}.csv_heading)"
             return 1
         fi
         json=$(rof $instance.to_json)
+        echo -e "json: $json"
         delete $instance
 
-        Video.from_json "$instance" "$json"
+        rof Video.from_json "$instance" "$json"
         if [ "$(rof $instance.to_string)" != "$string" ]; then
-            rof video.to_string
-            echo "$string"
+            echo "String: $(rof $instance.to_string)"
+            echo "Valid: $string"
             return 2
         fi
         delete $instance

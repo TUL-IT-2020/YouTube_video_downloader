@@ -43,6 +43,7 @@ function setSeed () { # ( file )
 	fi
 
 	for ID in $(cat $file); do
+		$DEBUG && echo "Adding: $ID to go."
 		togo[$ID]=true
 	done
 
@@ -67,34 +68,21 @@ function sort_and_store_videoIDs () { # ( IDs )
 	done
 }
 
-function process_video_link () { # ( path videoID )
+function process_video_json () { # ( path/file )
 	local path="$1"
-	local videoID="$2"
-	if [ -z $videoID ]; then 
-		echo -e "ERROR: no videoID to process!" 1>&2
-		return 1 
-	fi
-	local file="${path}${videoID}"
-	$DEBUG && echo "file: $file"
-	local page=$(cat $file)
-	
-	# remove from togo
-	unset togo[$videoID]
-	# get meta data
-	get_video_metadata video "$page" || return 1
-	$DEBUG && echo -e "$(rof video.to_string)"
-	if [ "$(get video.id)" == "" ]; then
-		echo -e "ERROR: invalid videoID!" 1>&2
-		return 2
-	fi
+	$DEBUG && echo "file: $path"
+	local file=$(cat $path)
 
-	# add to completed
-	completed[$videoID]=true
+	# get data
+	rof Video.from_json video "$file"
+
 	# store to csv
+	$DEBUG && echo -e "$file"
+	$DEBUG && echo -e "$(rof video.to_string)"
 	store_to_csv "$(rof video.to_string)" "$fileName"
 
 	# add new IDs
-	IDs=$(get_videos_IDs "$page")
+	IDs=$(get video.videoIds)
     $DEBUG && echo -e "$IDs"
 	
 	sort_and_store_videoIDs "$IDs"
@@ -105,30 +93,9 @@ function process_search () { # ( link search )
 	local link=$1
 	local search=$2
 	local url=$link$search
-}
-
-function store_hashMap_to_csv () { # ( hashMap fileName ) 
-	declare -n hashMap=$1
-	local fileName=$2
-	local file=""
-	
-	if [ -f $fileName ]; then
-		file=$(cat $fileName)
-	else
-		touch $fileName
-		echo $(get video.csv_heading) > $fileName
-	fi
-
-	for key in ${!hashMap[@]}; do
-		$DEBUG && echo "$key"
-		if [ $(echo "$file" | grep -c -- "$key") -ge 1 ]; then
-			file=$(sed "s/$key.*/${hashMap[$key]}/" <<< "$file")
-		else
-			file="$file\n${hashMap[$key]}"
-		fi
-	done
-
-	echo -e "$file" > $fileName
+	# vytvoří seedy
+	# jak vyřečím speciální parametry pro vyhledávání titulků?
+	page=$(get_page $url)
 }
 
 declare -A togo
@@ -184,12 +151,20 @@ while [ "${#togo[@]}" -ne 0 ]; do
 	# download pages
 	i=1
 	for videoID in ${!togo[@]}; do
+		# remove from togo
+		unset togo[$videoID]
+
 		# send id and link to pipe
+		$DEBUG && echo -e "Puting to pipe: $videoID"
 		echo "download" $videoID ${link}$videoID > $pipe
 		i=$(( i + 1 ))
+
+		# add to completed
+		completed[$videoID]=true
+
 		if [ $i -gt $iter ]; then 
 			$DEBUG && echo -e "Max itex."
-			break 
+			break
 		fi
 	done
 
@@ -198,7 +173,6 @@ while [ "${#togo[@]}" -ne 0 ]; do
 		sleep 0.1
 	done
 	
-	exit 0
 	# parse pages
 	while [ $(ls "$pages" | grep ".done" | wc -l) -gt 0 ]; do
 		index=$(( index + 1 ))
@@ -206,8 +180,9 @@ while [ "${#togo[@]}" -ne 0 ]; do
 
 		# get videoID from pages
 		videoID=$(ls $pages | grep -m 1 ".done" | cut -d "." -f 1)
+		$DEBUG && echo "path: $pages"
 		$DEBUG && echo "videoID: $videoID"
-		process_video_link $pages $videoID # 2> $log
+		process_video_json "${pages}${videoID}" # 2> $log
 
 		# remove files
 		rm ${pages}${videoID}
@@ -223,7 +198,6 @@ rm $pipe
 $VERBOSE && echo -e "Done"
 
 # TODO
-# sed občas na něčem spadne
 # pars Json
 # ISO 639 formát obsahuje metadata o vide včetně jazyka
 # END
