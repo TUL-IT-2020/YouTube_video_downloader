@@ -10,11 +10,11 @@ source ./lib.sh
 strings=( 
     "FIWE0hjrDNE;It’s gonna be a massacre???;;en ;UCeeFfhMcJa1kjtfZAGskOCA" 
     "FIWE0hjrDNE;It’s gonna be a massacre!!!;;en zh-Hans fil fr de nl-NL es ;UCeeFfhMcJa1kjtfZAGskOCA" 
-    "-NZ7ScAsGHI;Nazev;cs ;"
-    "-NZ7ScAsGHI;Novy nazev;cs ;"
+    "-NZ7ScAsGHI;Nazev;cs ;;"
+    "-NZ7ScAsGHI;Novy nazev;cs ;;"
     "fbjFofNGHks;Fossil Hybrid HR Q&A;;en ;UCRyUxNpQZBXen_hgkAMRTWw"
-    "MJ0m9fYs-l8;Ahoj"
-    "MJ0m9fYs-l8;' '"
+    "MJ0m9fYs-l8;Ahoj;;;"
+    "MJ0m9fYs-l8;' ';;;"
     ";;;;"
 )
 
@@ -130,7 +130,7 @@ function test_from_string_to_string () {
         if [ -z $(get video.csv_heading) ]; then
             return 1
         fi
-        if [ "$(rof video.to_string)" == "$string" ]; then
+        if [ "$(rof video.to_string)" != "$string" ]; then
             rof video.to_string
             echo "$string"
             return 2
@@ -141,7 +141,7 @@ function test_from_string_to_string () {
     return 0
 }
 
-function test_to_json () {
+function test_from_string_to_json () {
     instance="video"
     for string in "${strings[@]}"; do
         echo "String: $string"
@@ -152,6 +152,31 @@ function test_to_json () {
             return 1
         fi
         rof video.to_json
+        delete $instance
+        echo ""
+    done
+    return 0
+}
+
+function from_string_over_json_to_string () {
+    instance="video"
+    for string in "${strings[@]}"; do
+        echo "String: $string"
+        rof Video.from_string "$instance" "$string"
+        
+        echo -e "To string: $(rof ${instance}.to_string)"
+        if [ -z $(get ${instance}.csv_heading) ]; then
+            return 1
+        fi
+        json=$(rof $instance.to_json)
+        delete $instance
+
+        Video.from_json "$instance" "$json"
+        if [ "$(rof $instance.to_string)" != "$string" ]; then
+            rof video.to_string
+            echo "$string"
+            return 2
+        fi
         delete $instance
         echo ""
     done

@@ -80,7 +80,7 @@ if $DEBUG; then
     echo "name: $name"
     echo "folder: $folder"
     echo "link: $link"
-    echo "to: "${path}${name}
+    echo "to: ${path}${name}"
 fi
 
 if [ ! -f "${path}${name}" ]; then
