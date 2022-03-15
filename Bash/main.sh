@@ -24,7 +24,44 @@ function cleanup () {
 	rm $log
 	rm downloader.log
 	rm ${pages}*
-	rm $pipe
+}
+
+function download () {
+    local name=$1
+    local url=$2
+	$VERBOSE && echo -e "Downloading: $url"
+	./download_process_and_store.sh -s -p -f "pages" -n "$name" -l "$url" &
+}
+
+function get_n_keys_from_hashMap () { # ( hashMap n )
+	declare -n hashMap=$1
+	local n=$2
+	local i=0
+	declare -a array=()
+	for key in ${!hashMap[@]}; do
+		array+=( $key )
+		$DEBUG && echo -e "Index: $i, key: $key" 1>&2
+		if [ $i -gt $n ]; then 
+			$DEBUG && echo -e "Max itex."  1>&2
+			break
+		fi
+		i=$(( i + 1 ))
+	done
+	echo -e "${array[@]}"
+	return 0
+}
+
+function get_next_videoId () { # ( hashMap )
+	declare -n hashMap=$1
+	if [ $video_slice_index -ge $video_slice_size ]; then
+		read -r -a video_slice <<< $(get_n_keys_from_hashMap $1 $video_slice_max_size)
+		video_slice_size=${#video_slice[@]}
+		video_slice_index=0
+	fi
+	videoId=${video_slice[$video_slice_index]}
+	video_slice_index=$(( video_slice_index + 1 ))
+	$DEBUG && echo -e "VideoId: $videoId" 1>&2
+	echo $videoId
 }
 
 function setSeed () { # ( file )
@@ -52,7 +89,6 @@ function setSeed () { # ( file )
 
 function sort_and_store_videoIDs () { # ( IDs )
 	local IDs=$1
-	$DEBUG && echo -e "$IDs"
 	for ID in $IDs; do	
 		# is ID in completed?
 		if [ ${completed[$ID]+_} ]; then
@@ -106,11 +142,16 @@ new video = Video
 
 link="https://www.youtube.com/watch?v="
 
-iter=100
 pages="pages/"
-pipe="pipe"
 fileName="data.csv"
 log="main.log"
+
+threads=0
+max_threads=10
+video_slice=()
+video_slice_max_size=100
+video_slice_size=0
+video_slice_index=0
 
 # parse input
 $DEBUG && echo "Args: [$@]"
@@ -139,62 +180,59 @@ if [ ! -f $fileName ]; then
 	echo $(get video.csv_heading) > $fileName
 fi
 
-# init page downloader
-if [ ! -p $pipe ]; then
-    mkfifo $pipe
-fi
-./page_downloader.sh < $pipe &> downloader.log &
-
 index=0
+end=false
 while [ "${#togo[@]}" -ne 0 ]; do
 
 	# download pages
-	i=1
-	for videoID in ${!togo[@]}; do
+	while [ $threads -lt $max_threads ]; do
+		# get next videoId
+		videoId=$(get_next_videoId togo)
+		if [ -z $videoId ]; then break; fi
+
 		# remove from togo
-		unset togo[$videoID]
+		unset togo[$videoId]
 
 		# send id and link to pipe
-		$DEBUG && echo -e "Puting to pipe: $videoID"
-		echo "download" $videoID ${link}$videoID > $pipe
-		i=$(( i + 1 ))
+		$DEBUG && echo -e "To download: $videoId"
+		download $videoId ${link}$videoId &> downloader.log
 
 		# add to completed
-		completed[$videoID]=true
-
-		if [ $i -gt $iter ]; then 
-			$DEBUG && echo -e "Max itex."
-			break
-		fi
-	done
-
-	# wait for first download
-	while [ $(ls "$pages" | grep -m 1 ".done" | wc -l) -eq 0 ]; do
-		sleep 0.1
+		completed[$videoId]=true
+		threads=$(( threads + 1 ))
 	done
 	
-	# parse pages
-	while [ $(ls "$pages" | grep ".done" | wc -l) -gt 0 ]; do
+	sleep 1
+	# store parsed pages
+	if [ $(ls "$pages" | grep ".done" | wc -l) -gt 0 ]; then
 		index=$(( index + 1 ))
 		$VERBOSE && echo "$index"
 
 		# get videoID from pages
-		videoID=$(ls $pages | grep -m 1 ".done" | cut -d "." -f 1)
+		videoId=$(ls $pages | grep -m 1 ".done" | cut -d "." -f 1)
 		$DEBUG && echo "path: $pages"
-		$DEBUG && echo "videoID: $videoID"
-		process_video_json "${pages}${videoID}" # 2> $log
+		$DEBUG && echo "videoId: $videoId"
+		process_video_json "${pages}${videoId}" # 2> $log
 
 		# remove files
-		rm ${pages}${videoID}
-		rm ${pages}${videoID}.done
-	done
+		rm ${pages}${videoId}
+		rm ${pages}${videoId}.done
+		threads=$(( threads - 1 ))
+	fi
 
-	echo "exit" > $pipe
+	# exit
+	if read -r -t 0.1 -n 1 string; then
+		$DEBUG && echo -e "Read: $string"
+		case $string in 
+			q)	end=true;;
+			*)  $VERBOSE && echo -e "Unknown command: $string";;
+		esac
+	fi
+	if $end; then break; fi
+
 	break
 done
 
-echo "exit" > $pipe
-rm $pipe
 $VERBOSE && echo -e "Done"
 
 # TODO
