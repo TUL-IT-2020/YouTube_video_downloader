@@ -6,6 +6,7 @@
 *.json
 *.html
 **/pages/*
+**/videos/*
 
 ### Python ###
 # Byte-compiled / optimized / DLL files

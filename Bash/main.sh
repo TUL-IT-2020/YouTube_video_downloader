@@ -51,17 +51,19 @@ function get_n_keys_from_hashMap () { # ( hashMap n )
 	return 0
 }
 
-function get_next_videoId () { # ( hashMap )
-	declare -n hashMap=$1
+function get_next_videoId () { # ( hashMap videoId )
+	local -n id=$2
 	if [ $video_slice_index -ge $video_slice_size ]; then
-		read -r -a video_slice <<< $(get_n_keys_from_hashMap $1 $video_slice_max_size)
+		$DEBUG && echo -e "index: $video_slice_index >= size: $video_slice_size" 1>&2
+		#read -r -a video_slice <<< $(get_n_keys_from_hashMap $1 $video_slice_max_size)
+		video_slice=( $(get_n_keys_from_hashMap $1 $video_slice_max_size) )
 		video_slice_size=${#video_slice[@]}
 		video_slice_index=0
+		$DEBUG && echo -e "Size: $video_slice_size, index: $video_slice_index" 1>&2
 	fi
-	videoId=${video_slice[$video_slice_index]}
+	id=${video_slice[$video_slice_index]}
 	video_slice_index=$(( video_slice_index + 1 ))
-	$DEBUG && echo -e "VideoId: $videoId" 1>&2
-	echo $videoId
+	$DEBUG && echo -e "VideoId: $id, new index: $video_slice_index" 1>&2
 }
 
 function setSeed () { # ( file )
@@ -187,7 +189,9 @@ while [ "${#togo[@]}" -ne 0 ]; do
 	# download pages
 	while [ $threads -lt $max_threads ]; do
 		# get next videoId
-		videoId=$(get_next_videoId togo)
+		get_next_videoId togo videoId
+		$DEBUG && echo -e "Size: $video_slice_size, index: $video_slice_index"
+		$DEBUG && echo -e "VideoId: $videoId"
 		if [ -z $videoId ]; then break; fi
 
 		# remove from togo
@@ -230,12 +234,9 @@ while [ "${#togo[@]}" -ne 0 ]; do
 	fi
 	if $end; then break; fi
 
-	break
+	#break
 done
 
 $VERBOSE && echo -e "Done"
 
-# TODO
-# pars Json
-# ISO 639 formát obsahuje metadata o vide včetně jazyka
 # END

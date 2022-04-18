@@ -5,6 +5,9 @@
 
 # END
 
+# TODO
+# pars Json
+# ISO 639 formát obsahuje metadata o vide včetně jazyka
 : '
 Aplikace který čte ze vstupu zpravy
 Umí:
