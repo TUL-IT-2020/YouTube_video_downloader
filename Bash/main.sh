@@ -206,17 +206,16 @@ while [ "${#togo[@]}" -ne 0 ]; do
 		threads=$(( threads + 1 ))
 	done
 	
-	sleep 1
 	# store parsed pages
 	if [ $(ls "$pages" | grep ".done" | wc -l) -gt 0 ]; then
 		index=$(( index + 1 ))
 		$VERBOSE && echo "$index"
 
 		# get videoID from pages
-		videoId=$(ls $pages | grep -m 1 ".done" | cut -d "." -f 1)
+		videoId=$(ls $pages | sort -r | grep -m 1 ".done" | cut -d "." -f 1)
 		$DEBUG && echo "path: $pages"
 		$DEBUG && echo "videoId: $videoId"
-		process_video_json "${pages}${videoId}" # 2> $log
+		process_video_json "${pages}${videoId}" 2> $log
 
 		# remove files
 		rm ${pages}${videoId}
