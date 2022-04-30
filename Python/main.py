@@ -31,7 +31,7 @@ def process_video(video_json, index=None):
             print(transcript)
 
     if transcript.has_language(language["code"]):
-        if DEUBG:
+        if DEBUG:
             print("Got: ",language['title'])
         try:
             if VERBOSE:
