@@ -1,11 +1,12 @@
 from __future__ import unicode_literals
-import youtube_dl
+import yt_dlp
+import json
 
 from tools import *
 
 class MyLogger(object):
     def debug(self, msg):
-        print(msg)
+        #print(msg)
         pass
 
     def warning(self, msg):
@@ -68,7 +69,7 @@ class Video:
             file = path+"/"+file_name+'.%(ext)s'
             ydl_opts["outtmpl"] = file
             #print(file)
-        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([self.url + self.id])
 
 if __name__ == '__main__':

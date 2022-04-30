@@ -4,6 +4,7 @@ from youtubesearchpython import *
 from tools import *
 from video import *
 from subtitles import *
+from non_blocking_input import *
 
 
 def get_n_random(n, array):
@@ -24,8 +25,30 @@ def get_videos(search, n=100):
                 end = True
                 break
         search.next()
-        
 
+
+def process_video(video_json, index=None):
+    video = Video(video_json)
+    print(str(index) + ' - ' + video.title + " - " + video.id)
+    
+    try:
+        transcript = Subtitles(video.id, language["code"])
+    except Exception:
+        return False
+
+    if len(list(transcript.get_languages())) != 0:
+        print(transcript)
+
+    if transcript.has_language(language["code"]):
+        print("Mám: ",language['title'])
+        print("Stahuji...")
+        try:
+            video.save(video.id)
+            transcript.save(video.id)
+        except DownloadError as e:
+            print(e)
+        
+# config
 """
 "title" : ,
 "code" : ,
@@ -48,44 +71,34 @@ languages = {
 lang_folder = "../dict"
 language = languages["CS"]
 
-N = 3
+iterations = 1000
+number_of_words = 3
 path = get_path(lang_folder, language["file_name"])
 dictionary = read_file(path)
-words = get_n_random(N, dictionary)
-string = " ".join(words)
-string = "Živě cz"
-#string = "Česky s titulky"
-#string = "Aleš Brichta (s textem)"
-print(string)
-query = string
-#search= CustomSearch(string, VideoSortOrder.uploadDate, language = 'cs', region = 'CZ')
-search = VideosSearch(query, language=language["code"])
 
+old_settings = termios.tcgetattr(sys.stdin)
+try:
+    tty.setcbreak(sys.stdin.fileno())
+    exit = False
+    while not exit:
+        words = get_n_random(number_of_words, dictionary)
+        string = " ".join(words)
+        #string = "Česky s titulky"
+        string = "Aleš Brichta (s textem)"
+        print(string)
+        query = string
+        #search= CustomSearch(string, VideoSortOrder.uploadDate, language = 'cs', region = 'CZ')
+        search = VideosSearch(query, language=language["code"])
+        index = 0
+        for video_json in get_videos(search, number_of_words):
+            index += 1
+            process_video(video_json, index)
+            
+            if isData():
+                c = sys.stdin.read(1)
+                if c == "q":
+                    exit = True
 
-
-index = 0
-for video_json in get_videos(search, 1000):
-    video = Video(video_json)
-    print(str(index) + ' - ' + video.title + " - " + video.id)
-    index += 1
-
-    try:
-        transcript = Subtitles(video.id, language["code"])
-    except Exception:
-        continue
-
-    if len(list(transcript.get_languages())) != 0:
-        print(transcript)
-
-    if transcript.has_language(language["code"]):
-        print("Mám: ",language['title'])
-        print("Stahuji...")
-        try:
-            video.save(video.id)
-            transcript.save(video.id)
-        except DownloadError as e:
-            print(e)
-        #break
-    
-
-
+finally:
+    print("Exiting...")
+    termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
