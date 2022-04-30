@@ -4,17 +4,28 @@ DEBUG = True
 def get_videos(search, n=100):
     i = 0
     end = False
+    new_batch = True
     while not end:
         for video in search.result()['result']:
+            new_batch = False
             i += 1
             if i > n:
                 end = True
+                if DEBUG:
+                    print("Max iter hit.")
                 break
             yield video
+        
+        if new_batch:
+            if DEBUG:
+                print("Search does not have more videos.")
+            break
+
         if DEBUG:
             print("Searching more videos.")
         if not end and not search.next():
             end = True
+            new_batch = True
             if DEBUG:
                 print("Search does not have more videos.")
 
