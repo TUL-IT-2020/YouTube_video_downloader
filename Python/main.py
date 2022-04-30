@@ -23,7 +23,7 @@ def process_video(video_json, index=None):
     try:
         transcript = Subtitles(video.id, language["code"])
     except Exception as e:
-        print("Warning:", e)
+        print("Warning:", "Subtitles are disabled for this video")
         return False
 
     if len(list(transcript.get_languages())) != 0:
