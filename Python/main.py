@@ -17,24 +17,33 @@ def get_n_random(n, array):
 
 def process_video(video_json, index=None):
     video = Video(video_json)
-    print(str(index) + ' - ' + video.title + " - " + video.id)
+    if VERBOSE:
+        print(str(index) + ' - ' + video.title + " - " + video.id)
     
     try:
         transcript = Subtitles(video.id, language["code"])
-    except Exception:
+    except Exception as e:
+        print("ERROR:", e)
         return False
 
     if len(list(transcript.get_languages())) != 0:
-        print(transcript)
+        if DEBUG:
+            print(transcript)
 
     if transcript.has_language(language["code"]):
-        print("Mám: ",language['title'])
-        print("Stahuji...")
+        if DEUBG:
+            print("Got: ",language['title'])
         try:
+            if VERBOSE:
+                print("Downloading video...")
             video.save(video.id)
+            if VERBOSE:
+                print("Downloading transcript...")
             transcript.save(video.id)
+            if VERBOSE:
+                print("Downloading is finished.")
         except Exception as e:
-            print(e)
+            print("ERROR:", e)
         
 # config
 """
@@ -56,6 +65,7 @@ languages = {
 }
 
 DEBUG = True
+VERBOSE = True
 lang_folder = "../dict"
 language = languages["CS"]
 
