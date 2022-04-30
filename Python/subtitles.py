@@ -15,7 +15,7 @@ class Subtitles():
         self.transcripts = YTTA.list_transcripts(id)
         self.fetch_language(language)
 
-    def get_languages():
+    def get_languages(self):
         for transcript in self.transcripts:
             yield transcript.language_code
 
@@ -30,12 +30,14 @@ class Subtitles():
             self.text = YTTA.get_transcript(self.id, languages=[language])
             #transcript.fetch()
 
-    def save(self, file=None, plain_text=False):
+    def save(self, file_name=None, plain_text=False):
         if self.text is None:
             raise InvalidLanguage
         
-        if file is None:
+        if file_name is None:
             file = path + "/" + self.id + "_" + self.language + ".txt"
+        else:
+            file = path + "/" + file_name + ".txt"
         
         with open(file, "w") as f:
             for line in self.text:
@@ -64,7 +66,7 @@ if __name__ == '__main__':
     print(sub)
     sub = Subtitles(id, language)
     sub.save()
-    sub.save(path + "/" + id + "_" + language + "_plain" + ".txt", plain_text=True)
+    sub.save(id + "_" + language + "_plain", plain_text=True)
     
     #srt = YTTA.get_transcript(id, languages=['en'])
     #print(srt)
