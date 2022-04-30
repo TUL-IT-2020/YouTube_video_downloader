@@ -1,9 +1,9 @@
 import time
 import random
 
+from search import *
 from tools import *
 from video import *
-from search import *
 from subtitles import *
 from non_blocking_input import *
 
@@ -71,7 +71,6 @@ try:
     while not exit:
         words = get_n_random(number_of_words, dictionary)
         string = " ".join(words)
-        #string = "Aleš Brichta (s textem)"
         print(string)
         time.sleep(2)
         query = string
