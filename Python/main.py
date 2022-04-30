@@ -1,9 +1,9 @@
 import time
 import random
-from youtubesearchpython import *
 
 from tools import *
 from video import *
+from search import *
 from subtitles import *
 from non_blocking_input import *
 
@@ -14,26 +14,6 @@ def get_n_random(n, array):
         entrys.append(random.choice(array))
     return entrys
 
-
-def get_videos(search, n=100):
-    i = 0
-    end = False
-    while not end:
-        for video in search.result()['result']:
-            yield video
-            i += 1
-            if i > n:
-                end = True
-                break
-        if not search.next():
-            end = True
-            if DEBUG:
-                print("Search does not have more videos.")
-
-
-def print_videos(search):
-    for video in search.result()['result']:
-        print(video['title'])
 
 def process_video(video_json, index=None):
     video = Video(video_json)
@@ -97,10 +77,8 @@ try:
         query = string
         #search= CustomSearch(string, VideoSortOrder.uploadDate, language = 'cs', region = 'CZ')
         search = VideosSearch(query, language=language["code"])
-        if DEBUG:
-            print_videos(search)
         index = 0
-        for video_json in get_videos(search, number_of_words):
+        for video_json in get_videos(search, iterations):
             index += 1
             process_video(video_json, index)
             if isData():
