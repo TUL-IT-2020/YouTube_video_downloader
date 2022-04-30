@@ -2,7 +2,7 @@ import random
 from youtubesearchpython import *
 
 from tools import *
-#from video import *
+from video import *
 from subtitles import *
 
 
@@ -57,44 +57,28 @@ string = "Karel Čapek"
 #string = "Česky s titulky"
 string = "Aleš Brichta (s textem)"
 print(string)
-# + "&" + "sp=EgIoAQ%253D%253D"
 query = string
 #search= CustomSearch(string, VideoSortOrder.uploadDate, language = 'cs', region = 'CZ')
 search = VideosSearch(query, language=language["code"])
-#search = VideosSearch(query, limit=100, language=language["code"])
-# mode = ResultMode.dict
+
 
 
 index = 0
 for video_json in get_videos(search, 1000):
     video = Video(video_json)
     url = Video.url+video.id
-    transcripts = Transcript.get(url)
+    transcript = Subtitles(video.id, language[code])
 
     print(str(index) + ' - ' + video.title + " - " + video.id)
-    if len(transcripts["languages"]) != 0:
-        
-        print(transcript_get_languages(transcripts["languages"]))
+    if len(transcript.get_languages()) != 0:
+        print(transcript)
 
-    if transcript_has_language(transcripts["languages"], language):
+    if transcript.has_language(language["code"]):
         print("Mám: ",language['title'])
         print("Stahuji...")
-        video.save("empty")
+        video.save()
+        transcript.save()
         break
     
     index += 1
 
-"""
-import urllib.request
-link = "https://www.youtube.com/watch?v="
-video = "fbjFofNGHks"
-url = link+video
-print(url)
-
-
-opener = urllib.request.FancyURLopener({})
-f = opener.open(url)
-content = f.read()
-
-print(content)
-"""

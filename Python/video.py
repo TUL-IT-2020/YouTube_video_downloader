@@ -3,7 +3,6 @@ import youtube_dl
 
 from tools import *
 
-
 def my_hook(d):
     if d['status'] == 'finished':
         print('Done downloading, now converting ...')
@@ -23,8 +22,8 @@ ydl_opts = {
     'progress_hooks': [my_hook],
 }
 
-lang_folder = "./download"
-path = get_path(lang_folder)
+folder = "../download"
+path = get_path(folder)
 
 ydl_opts = {
     'outtmpl': path+'/%(title)s.%(ext)s',
@@ -49,9 +48,18 @@ class Video:
     def __str__(self):
         return "# Video: \tTitle:" + self.title + "\tID:" + self.id
 
-    def save(self, file):
+    def save(self, file=None):
+        if file is not None:
+            ydl_opts[outtmpl] = path+"/"+file+'s.%(ext)s',
         with youtube_dl.YoutubeDL(ydl_opts) as ydl:
             ydl.download([self.url + self.id])
 
 if __name__ == '__main__':
+    id = "bRUtDtMAVKQ"
+    result = {
+        'id': id,
+        'title': "Aleš Brichta (s textem)"
+    }
     print("Path:", path)
+    video = Video(result)
+    video.save()
