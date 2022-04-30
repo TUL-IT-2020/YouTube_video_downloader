@@ -23,7 +23,7 @@ def process_video(video_json, index=None):
     try:
         transcript = Subtitles(video.id, language["code"])
     except Exception as e:
-        print("ERROR:", e)
+        print("Warning:", e)
         return False
 
     if len(list(transcript.get_languages())) != 0:
@@ -44,6 +44,8 @@ def process_video(video_json, index=None):
                 print("Downloading is finished.")
         except Exception as e:
             print("ERROR:", e)
+            return False
+    return True
         
 # config
 """
@@ -80,12 +82,14 @@ try:
     exit = False
     while not exit:
         words = get_n_random(number_of_words, dictionary)
-        string = " ".join(words)
-        print(string)
+        query = " ".join(words)
+        if VERBOSE:
+            print("Searched words:")
+            print(query)
         time.sleep(2)
-        query = string
-        #search= CustomSearch(string, VideoSortOrder.uploadDate, language = 'cs', region = 'CZ')
         search = VideosSearch(query, language=language["code"])
+        if DEBUG:
+            print("Quering initial search.")
         index = 0
         for video_json in get_videos(search, iterations):
             index += 1

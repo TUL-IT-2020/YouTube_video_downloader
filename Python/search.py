@@ -11,6 +11,8 @@ def get_videos(search, n=100):
                 end = True
                 break
             yield video
+        if DEBUG:
+            print("Searching more videos.")
         if not end and not search.next():
             end = True
             if DEBUG:
