@@ -1,3 +1,4 @@
+import time
 import random
 from youtubesearchpython import *
 
@@ -24,8 +25,15 @@ def get_videos(search, n=100):
             if i > n:
                 end = True
                 break
-        search.next()
+        if not search.next():
+            end = True
+            if DEBUG:
+                print("Search does not have more videos.")
 
+
+def print_videos(search):
+    for video in search.result()['result']:
+        print(video['title'])
 
 def process_video(video_json, index=None):
     video = Video(video_json)
@@ -45,7 +53,7 @@ def process_video(video_json, index=None):
         try:
             video.save(video.id)
             transcript.save(video.id)
-        except DownloadError as e:
+        except Exception as e:
             print(e)
         
 # config
@@ -67,7 +75,7 @@ languages = {
     }
 }
 
-
+DEBUG = True
 lang_folder = "../dict"
 language = languages["CS"]
 
@@ -83,17 +91,18 @@ try:
     while not exit:
         words = get_n_random(number_of_words, dictionary)
         string = " ".join(words)
-        #string = "Česky s titulky"
-        string = "Aleš Brichta (s textem)"
+        #string = "Aleš Brichta (s textem)"
         print(string)
+        time.sleep(2)
         query = string
         #search= CustomSearch(string, VideoSortOrder.uploadDate, language = 'cs', region = 'CZ')
         search = VideosSearch(query, language=language["code"])
+        if DEBUG:
+            print_videos(search)
         index = 0
         for video_json in get_videos(search, number_of_words):
             index += 1
             process_video(video_json, index)
-            
             if isData():
                 c = sys.stdin.read(1)
                 if c == "q":
