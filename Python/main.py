@@ -14,16 +14,42 @@ def get_n_random(n, array):
         entrys.append(random.choice(array))
     return entrys
 
+
 def add_video_to_downloaded(downloaded, video, transcript):
     key, data = video.to_json()
     data['transcript_languages'] = list(transcript.get_languages())
     downloaded[key] = data
 
-def process_video(video_json, downloaded, index=None):
+
+def download(video, transcript):
+    try:
+        if VERBOSE:
+            print("Downloading video...")
+        video.save(video.id)
+        if VERBOSE:
+            print("Downloading transcript...")
+        transcript.save(video.id)
+        if VERBOSE:
+            print("Downloading is finished.")
+        add_video_to_downloaded(downloaded, video, transcript)
+    except Exception as e:
+        print("ERROR:", e)
+        return False
+    return True
+
+def process_video(video_json, language_dictionary, downloaded, index=None):
     video = Video(video_json)
     if VERBOSE:
         print(str(index) + ' - ' + str(video))
+
+    # allready downloaded
+    if downloaded.get(video.id) is not None:
+        return False
     
+    # not valid language title
+    if not is_in_language(language_dictionary, video.title):
+        return False
+
     try:
         transcript = Subtitles(video.id, language["code"])
     except Exception as e:
@@ -34,24 +60,15 @@ def process_video(video_json, downloaded, index=None):
         if DEBUG:
             print(transcript)
 
-    if transcript.has_language(language["code"]):
-        if DEBUG:
-            print("Got: ",language['title'])
-        try:
-            if VERBOSE:
-                print("Downloading video...")
-            video.save(video.id)
-            if VERBOSE:
-                print("Downloading transcript...")
-            transcript.save(video.id)
-            if VERBOSE:
-                print("Downloading is finished.")
-            add_video_to_downloaded(downloaded, video, transcript)
-        except Exception as e:
-            print("ERROR:", e)
-            return False
-    return True
-        
+    # does not have valid language trancritpion
+    if not transcript.has_language(language["code"]):
+        return False
+    
+    if DEBUG:
+        print("Got: ", language['title'])
+    return download(video, transcript)
+
+
 # config
 """
 "title" : ,
@@ -80,7 +97,8 @@ language = languages["CS"]
 iterations = 1000
 number_of_words = 3
 path = get_path(lang_folder, language["file_name"])
-dictionary = read_file(path)
+all_words = read_file(path)
+language_dictionary = list_to_dict(all_words)
 
 old_settings = termios.tcgetattr(sys.stdin)
 downloaded = {}
@@ -88,7 +106,7 @@ try:
     tty.setcbreak(sys.stdin.fileno())
     exit = False
     while not exit:
-        words = get_n_random(number_of_words, dictionary)
+        words = get_n_random(number_of_words, all_words)
         query = " ".join(words)
         if VERBOSE:
             print("Searched words:")
@@ -97,15 +115,13 @@ try:
         search = VideosSearch(query, language=language["code"])
         if DEBUG:
             print("Quering initial search.")
-        
+
         index = 0
         for video_json in get_videos(search, iterations):
             index += 1
 
-            # yet not downloaded
-            if downloaded.get(video_json['id']) is None:
-                process_video(video_json, downloaded, index)
-            
+            process_video(video_json, language_dictionary, downloaded, index)
+
             # check pressed key
             if isData():
                 c = sys.stdin.read(1)

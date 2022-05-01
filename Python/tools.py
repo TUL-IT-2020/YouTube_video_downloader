@@ -17,16 +17,23 @@ def read_file(path):
         file.close()
         return text
 
+
+def remove_punctuation(text : string):
+    return text.translate(str.maketrans('', '', string.punctuation))
+
+
 def is_in_language(language: dict, text: string, min_matches: int = 1):
     matches = 0
     for word in text.split():
-        if language.get(word, False):
+        if language.get(remove_punctuation(word), False):
             matches +=1
-    return True if matches > min_matches else False
+    return True if matches >= min_matches else False
+
 
 def list_to_dict(l: list, value : bool = True):
-    dictionary = {key: value for (key, value) in l}
+    dictionary = {key: value for key in l}
     return dictionary
+
 
 def pick_random_key_from_dict(d: dict):
     """Grab a random key from a dictionary."""
