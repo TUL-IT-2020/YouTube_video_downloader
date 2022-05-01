@@ -49,7 +49,7 @@ def process_video(video_json, language_dictionary, downloaded, index=None):
         return False
     
     # not valid language title
-    if not is_in_language(language_dictionary, video.title):
+    if not is_in_language(language_dictionary, video.title, DICT_MATCH):
         if VERBOSE:
             print("Title not in my language.")
         return False
@@ -103,6 +103,7 @@ number_of_words = 3
 path = get_path(lang_folder, language["file_name"])
 all_words = read_file(path)
 language_dictionary = list_to_dict(all_words)
+DICT_MATCH = 2
 
 old_settings = termios.tcgetattr(sys.stdin)
 downloaded = {}
