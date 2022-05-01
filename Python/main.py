@@ -6,6 +6,7 @@ from tools import *
 from video import *
 from subtitles import *
 from non_blocking_input import *
+import colors
 
 
 def get_n_random(n, array):
@@ -33,7 +34,7 @@ def download(video, transcript):
             print("Downloading is finished.")
         add_video_to_downloaded(downloaded, video, transcript)
     except Exception as e:
-        print("ERROR:", e)
+        print(colors.Red + "ERROR:" + colors.NC, e)
         return False
     return True
 
@@ -57,7 +58,8 @@ def process_video(video_json, language_dictionary, downloaded, index=None):
     try:
         transcript = Subtitles(video.id, language["code"])
     except Exception as e:
-        print("Warning:", "Subtitles are disabled for this video")
+        print(colors.Yellow + "Warning:" + colors.NC,
+            "Subtitles are disabled for this video")
         return False
 
     if len(list(transcript.get_languages())) != 0:
@@ -69,7 +71,7 @@ def process_video(video_json, language_dictionary, downloaded, index=None):
         return False
     
     if DEBUG:
-        print("Got: ", language['title'])
+        print("Got: ", colors.Blue + language['title'], colors.NC)
     return download(video, transcript)
 
 

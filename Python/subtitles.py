@@ -47,7 +47,12 @@ class Subtitles():
                     f.write("{}\n".format(line))
 
     def __str__(self):
-        string = "id: \t\t Language: \t Code: \t Generated:\n"
+        string = (
+            colors.BGreen + "id: \t\t " + 
+            colors.Green + "Language: \t " +
+            colors.BIGreen + "Code: \t " +
+            colors.Green + "Generated:\n" + colors.NC
+        )
         for transcript in self.transcripts:
             string += (""+
                 transcript.video_id + "\t " +

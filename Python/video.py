@@ -54,10 +54,10 @@ class Video:
 
     def __str__(self):
         return (
-            "Video: \n" +
-            "Title: " + self.title +
-            "\tDuration: " + self.duration +
-            "\tID: " + self.id
+            colors.Green + "Video: " + colors.NC +
+            "\n - Title: " + colors.Blue + self.title + colors.NC +
+            "\n - Duration: " + colors.Blue + self.duration + colors.NC +
+            "\n - ID: " + colors.Blue + self.id + colors.NC
         )
 
     def to_json(self):

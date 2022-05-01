@@ -2,13 +2,14 @@ from tools import *
 
 
 language = ["kůň", "ódy", "o", "a", "ďáblů", "péče"]
+texts_valid = [False, True, True, True]
 texts = [
     "The quick brown fox jumps over a lazy dog.",
     "Příliš žluťoučký kůň úpěl ďábelské ódy.",
     "Nechť již hříšné saxofony ďáblů rozezvučí síň úděsnými tóny waltzu, tanga a quickstepu.",
     "Inkoust Tattoo .  PÉČE O TETOVÁNÍ . Suprasorb F"
 ]
-texts_valid = [False, True, True, True]
+# Inside Star Citizen: Budoucnost vesmírného boje
 
 punctuation = "!hi. wh?at is the weat[h]er lik?e."
 removed_punctuation = "hi what is the weather like"

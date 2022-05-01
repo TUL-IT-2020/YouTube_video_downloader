@@ -1,6 +1,7 @@
 import os
 import random
 import string
+import colors
 
 def get_path(directory, file_name="."):
     return os.path.abspath(os.path.join(os.path.dirname(__file__), directory, file_name))
