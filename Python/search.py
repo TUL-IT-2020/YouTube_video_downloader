@@ -50,5 +50,10 @@ if __name__ == '__main__':
     iterations = 2
     query = "Aleš Brichta (s textem)"
     search = VideosSearch(query, language="cs")
-    lenght = list(get_videos(search, iterations))
-    print(len(lenght), iterations)
+    videos = list(get_videos(search, iterations))
+    lenght = len(videos)
+    print(lenght, iterations)
+
+    for video in videos:
+        #print(video)
+        pass

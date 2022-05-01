@@ -14,11 +14,15 @@ def get_n_random(n, array):
         entrys.append(random.choice(array))
     return entrys
 
+def add_video_to_downloaded(downloaded, video, transcript):
+    key, data = video.to_json()
+    data['transcript_languages'] = list(transcript.get_languages())
+    downloaded[key] = data
 
-def process_video(video_json, index=None):
+def process_video(video_json, downloaded, index=None):
     video = Video(video_json)
     if VERBOSE:
-        print(str(index) + ' - ' + video.title + " - " + video.id)
+        print(str(index) + ' - ' + str(video))
     
     try:
         transcript = Subtitles(video.id, language["code"])
@@ -42,6 +46,7 @@ def process_video(video_json, index=None):
             transcript.save(video.id)
             if VERBOSE:
                 print("Downloading is finished.")
+            add_video_to_downloaded(downloaded, video, transcript)
         except Exception as e:
             print("ERROR:", e)
             return False
@@ -68,6 +73,7 @@ languages = {
 
 DEBUG = True
 VERBOSE = True
+downloaded_file = "downloaded.data"
 lang_folder = "../dict"
 language = languages["CS"]
 
@@ -77,6 +83,7 @@ path = get_path(lang_folder, language["file_name"])
 dictionary = read_file(path)
 
 old_settings = termios.tcgetattr(sys.stdin)
+downloaded = {}
 try:
     tty.setcbreak(sys.stdin.fileno())
     exit = False
@@ -90,10 +97,16 @@ try:
         search = VideosSearch(query, language=language["code"])
         if DEBUG:
             print("Quering initial search.")
+        
         index = 0
         for video_json in get_videos(search, iterations):
             index += 1
-            process_video(video_json, index)
+
+            # yet not downloaded
+            if downloaded.get(video_json['id']) is None:
+                process_video(video_json, downloaded, index)
+            
+            # check pressed key
             if isData():
                 c = sys.stdin.read(1)
                 if c == "q":
@@ -102,3 +115,4 @@ try:
 finally:
     print("Exiting...")
     termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
+    print("Done")
