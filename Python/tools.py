@@ -25,7 +25,7 @@ def remove_punctuation(text : string):
 def is_in_language(language: dict, text: string, min_matches: int = 1):
     matches = 0
     for word in text.split():
-        if language.get(remove_punctuation(word), False):
+        if language.get(remove_punctuation(word).lower(), False):
             matches +=1
     return True if matches >= min_matches else False
 

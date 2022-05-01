@@ -28,7 +28,7 @@ def download(video, transcript):
         video.save(video.id)
         if VERBOSE:
             print("Downloading transcript...")
-        transcript.save(video.id)
+        transcript.save(video.id, plain_text=True)
         if VERBOSE:
             print("Downloading is finished.")
         add_video_to_downloaded(downloaded, video, transcript)
@@ -44,10 +44,14 @@ def process_video(video_json, language_dictionary, downloaded, index=None):
 
     # allready downloaded
     if downloaded.get(video.id) is not None:
+        if VERBOSE:
+            print("Allready downloaded.")
         return False
     
     # not valid language title
     if not is_in_language(language_dictionary, video.title):
+        if VERBOSE:
+            print("Title not in my language.")
         return False
 
     try:

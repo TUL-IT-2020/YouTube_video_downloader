@@ -1,13 +1,14 @@
 from tools import *
 
 
-language = ["kůň", "ódy", "a", "ďáblů"]
+language = ["kůň", "ódy", "o", "a", "ďáblů", "péče"]
 texts = [
     "The quick brown fox jumps over a lazy dog.",
     "Příliš žluťoučký kůň úpěl ďábelské ódy.",
-    "Nechť již hříšné saxofony ďáblů rozezvučí síň úděsnými tóny waltzu, tanga a quickstepu."
+    "Nechť již hříšné saxofony ďáblů rozezvučí síň úděsnými tóny waltzu, tanga a quickstepu.",
+    "Inkoust Tattoo .  PÉČE O TETOVÁNÍ . Suprasorb F"
 ]
-texts_valid = [False, True, True]
+texts_valid = [False, True, True, True]
 
 punctuation = "!hi. wh?at is the weat[h]er lik?e."
 removed_punctuation = "hi what is the weather like"
