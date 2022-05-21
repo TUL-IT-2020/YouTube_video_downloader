@@ -3,6 +3,11 @@ import random
 import string
 import colors
 
+Blue = colors.IBlue
+Red = colors.IRed
+Green = colors.IGreen
+NC = colors.NC
+
 def get_path(directory, file_name="."):
     return os.path.abspath(os.path.join(os.path.dirname(__file__), directory, file_name))
 
@@ -23,11 +28,15 @@ def remove_punctuation(text : string):
     return text.translate(str.maketrans('', '', string.punctuation))
 
 
-def is_in_language(language: dict, text: string, min_matches: int = 1):
+def words_matches(language: dict, text: string):
     matches = 0
     for word in text.split():
         if language.get(remove_punctuation(word).lower(), False):
             matches +=1
+    return matches
+
+def is_in_language(language: dict, text: string, min_matches: int = 1):
+    matches = words_matches(language, text)
     return True if matches >= min_matches else False
 
 

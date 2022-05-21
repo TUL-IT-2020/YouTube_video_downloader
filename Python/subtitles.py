@@ -35,9 +35,9 @@ class Subtitles():
             raise InvalidLanguage
         
         if file_name is None:
-            file = path + "/" + self.id + "_" + self.language + ".txt"
+            file = path + "/" + self.language + "/" + self.id + ".txt"
         else:
-            file = path + "/" + file_name + ".txt"
+            file = path + "/" + self.language + "/" + file_name + ".txt"
         
         with open(file, "w") as f:
             for line in self.text:
@@ -48,22 +48,25 @@ class Subtitles():
 
     def __str__(self):
         string = (
-            colors.BGreen + "id: \t\t " + 
+            colors.BIGreen + "id: \t\t " + 
             colors.Green + "Language: \t " +
             colors.BIGreen + "Code: \t " +
             colors.Green + "Generated:\n" + colors.NC
         )
-        for transcript in self.transcripts:
-            string += (""+
+        for i, transcript in enumerate(self.transcripts):
+            color = colors.Blue if i%2 == 0 else colors.IBlue
+            string += (""+color+
                 transcript.video_id + "\t " +
                 transcript.language + "\t " +
                 transcript.language_code + "\t " +
                 str(transcript.is_generated) + "\n"
             )
+        string += colors.NC
         return string
 
 if __name__ == '__main__':
     id = "bRUtDtMAVKQ"
+    id = "R0g_5DKjj3w"
     language = "cs"
 
     transcript_list = YTTA.list_transcripts(id)

@@ -44,8 +44,9 @@ ydl_opts = {
 class Video:
     url = "http://www.youtube.com/watch?v="
     
-    def __init__(self, result):
+    def __init__(self, result, language=None):
         self.id = result['id']
+        self.language = language
         self.title = result['title']
         self.duration = result['duration']
         #self.keywords = result['keywords']
@@ -73,7 +74,7 @@ class Video:
 
     def save(self, file_name=None):
         if file_name is not None:
-            file = path+"/"+file_name+'.%(ext)s'
+            file = path + "/" + self.language + "/" + file_name+'.%(ext)s'
             ydl_opts["outtmpl"] = file
             #print(file)
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
