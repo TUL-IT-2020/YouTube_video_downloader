@@ -24,6 +24,35 @@ def add_video_to_downloaded(downloaded, video, transcript):
     downloaded[key] = data
 
 
+def parse_args(args):
+    """parse arguments"""
+    parser = argparse.ArgumentParser(
+        description='Youtube video & subtitles downloader.')
+    parser.add_argument(
+        "-l", "--language", help="select language")
+    parser.add_argument(
+        "-w", "--words", help="Set number of generated words.",
+        default=3, type=int)
+    parser.add_argument(
+        "-i", "--iterations", help="Number of tested iterations for query",
+        default=1000, type=int)
+    parser.add_argument(
+        "-v", "--verbose", help="Increase verbosity.",
+        action="store_true", default=False)
+    parser.add_argument(
+        "-d", "--debug", help="Run debug options.",
+        action="store_true", default=False)
+    args = parser.parse_args(args)
+    if args.language is None:
+        parser.error("Language must be selected!")
+
+    # TODO
+    DEBUG = args.debug
+    VERBOSE = args.verbose
+    ret = [args.language, args.words, args.iterations]
+    return ret
+
+
 def download(video, transcript):
     try:
         if VERBOSE:
@@ -55,7 +84,7 @@ def process_video(video_json, language, language_dictionary, downloaded, index=N
         return False
 
     # not valid language title
-    if not is_in_language(language_dictionary, video.title, DICT_MATCH):
+    if not is_in_language(language_code, video.title):
         if VERBOSE:
             print("Title not in my language.")
         return False
@@ -80,38 +109,11 @@ def process_video(video_json, language, language_dictionary, downloaded, index=N
     return download(video, transcript)
 
 
-def parse_args(args):
-    """parse arguments"""
-    parser = argparse.ArgumentParser(
-        description='Youtube video & subtitles downloader.')
-    parser.add_argument(
-        "-l", "--language", help="select language")
-    parser.add_argument(
-        "-w", "--words", help="Set number of generated words.",
-        default=3, type=int)
-    parser.add_argument(
-        "-i", "--iterations", help="Number of tested iterations for query",
-        default=1000, type=int)
-    parser.add_argument(
-        "-v", "--verbose", help="Increase verbosity.",
-        action="store_true", default=False)
-    parser.add_argument(
-        "-d", "--debug", help="Run debug options.",
-        action="store_true", default=False)
-    args = parser.parse_args(args)
-    if args.language is None:
-        parser.error("Language must be selected!")
-
-    # TODO
-    DEBUG = args.debug
-    VERBOSE = args.verbose
-    ret = [args.language, args.words, args.iterations]
-    return ret
-
 
 # config
 DEBUG = True
 VERBOSE = True
+DICT_MATCH = 2
 """
 "title" : ,
 "code" : ,
@@ -146,7 +148,6 @@ if __name__ == '__main__':
     path = get_path(lang_folder, language["file_name"])
     all_words = read_file(path)
     language_dictionary = list_to_dict(all_words)
-    DICT_MATCH = 2
 
     old_settings = termios.tcgetattr(sys.stdin)
     downloaded = {}

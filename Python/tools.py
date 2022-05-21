@@ -2,6 +2,7 @@ import os
 import random
 import string
 import colors
+import langdetect
 
 Blue = colors.IBlue
 Red = colors.IRed
@@ -35,15 +36,21 @@ def words_matches(language: dict, text: string):
             matches +=1
     return matches
 
-def is_in_language(language: dict, text: string, min_matches: int = 1):
+
+def is_in_language_old(language: dict, text: string, min_matches: int = 1):
     matches = words_matches(language, text)
     return True if matches >= min_matches else False
 
+def is_in_language(language: string, text: string, threshold: float = 0.5):
+    detected_languges_list = langdetect.detect_langs(text)
+    detected_languges = {entry.lang:entry.prob for entry in detected_languges_list}
+    print(detected_languges)
+    probability = detected_languges.get(language, 0)
+    return True if probability > threshold else False
 
 def list_to_dict(l: list, value : bool = True):
     dictionary = {key: value for key in l}
     return dictionary
-
 
 def pick_random_key_from_dict(d: dict):
     """Grab a random key from a dictionary."""
