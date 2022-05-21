@@ -1,4 +1,6 @@
 from youtubesearchpython import *
+import colors
+
 DEBUG = True
 
 def get_videos(search, n=100):
@@ -30,7 +32,7 @@ def get_videos(search, n=100):
                 if DEBUG:
                     print("Search does not have more videos.")
         except Exception as e:
-            print(e)
+            print(colors.Red + "ERROR:" + colors.NC, e)
             end = True
             
 

@@ -28,7 +28,8 @@ def download(video, transcript):
     try:
         if VERBOSE:
             print("Downloading video...")
-        video.save(video.id)
+        video.save(video.id + "_" + video.title)
+        #video.save(video.id)
         if VERBOSE:
             print("Downloading transcript...")
         transcript.save(video.id, plain_text=True)
