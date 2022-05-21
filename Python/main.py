@@ -62,6 +62,7 @@ def download(video, transcript, downloaded):
 
 
 def process_video(video_json, language, downloaded, index=None):
+    match = 0.3
     language_code = language["code"]
     video = Video(video_json, language_code)
     if VERBOSE:
@@ -74,7 +75,7 @@ def process_video(video_json, language, downloaded, index=None):
         return False
 
     # not valid language title
-    if not is_in_language(language_code, video.title):
+    if not is_in_language(language_code, video.title, match):
         if VERBOSE:
             print("Title not in my language.")
         return False
@@ -133,7 +134,6 @@ class WorkerThread(threading.Thread):
             index = 0
             for video_json in get_videos(search, self.iterations):
                 index += 1
-                time.sleep(1)
                 process_video(video_json, self.language,
                               self.downloaded, index)
                 if check_end():
