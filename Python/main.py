@@ -136,8 +136,6 @@ languages = {
 if __name__ == '__main__':
     selected_language, number_of_words, iterations = parse_args(sys.argv[1:])
 
-    selected_language = "CS"
-
     language = languages[selected_language]
     language_code = language["code"]
     downloaded_file = "downloaded.data"

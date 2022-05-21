@@ -24,10 +24,15 @@ def get_videos(search, n=100):
         if DEBUG:
             print("Searching more videos.")
         new_batch = True
-        if not end and not search.next():
+        try:
+            if not end and not search.next():
+                end = True
+                if DEBUG:
+                    print("Search does not have more videos.")
+        except Exception as e:
+            print(e)
             end = True
-            if DEBUG:
-                print("Search does not have more videos.")
+            
 
 def get_videos_list(search, n=100):
     i = 0
