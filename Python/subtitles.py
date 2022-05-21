@@ -74,7 +74,7 @@ if __name__ == '__main__':
     print(sub)
     sub = Subtitles(id, language)
     sub.save()
-    sub.save(id + "_" + language + "_plain", plain_text=True)
+    sub.save(id + "_plain", plain_text=True)
     
     #srt = YTTA.get_transcript(id, languages=['en'])
     #print(srt)

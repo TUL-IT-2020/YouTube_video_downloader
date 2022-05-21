@@ -45,13 +45,13 @@ class Video:
     url = "http://www.youtube.com/watch?v="
     
     def __init__(self, result, language=None):
-        self.id = result['id']
-        self.language = language
-        self.title = result['title']
-        self.duration = result['duration']
+        self.id = str(result['id'])
+        self.language = str(language)
+        self.title = str(result['title'])
+        self.duration = str(result['duration'])
         #self.keywords = result['keywords']
-        self.channel_id = result['channel']['id']
-        self.channel_name = result['channel']['name']
+        self.channel_id = str(result['channel']['id'])
+        self.channel_name = str(result['channel']['name'])
 
     def __str__(self):
         return (
@@ -74,9 +74,9 @@ class Video:
 
     def save(self, file_name=None):
         if file_name is not None:
-            file = path + "/" + self.language + "/" + file_name+'.%(ext)s'
-            ydl_opts["outtmpl"] = file
-            #print(file)
+            file_name = path + "/" + self.language + "/" + file_name+'.%(ext)s'
+        ydl_opts["outtmpl"] = file_name
+        #print(file_name)
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([self.url + self.id])
 
@@ -92,11 +92,11 @@ if __name__ == '__main__':
         }
     }
     print("Path:", path)
-    video = Video(result)
+    video = Video(result, "cs")
     print(video)
     print(video.to_json())
-    #video.save()
-    #video.save(id)
+    video.save()
+    video.save(id + "_video")
 
 """
 ydl_opts = {

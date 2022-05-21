@@ -89,7 +89,7 @@ def parse_args(args):
         default=3, type=int)
     parser.add_argument(
         "-i", "--iterations", help="Number of tested iterations for query",
-        default=100, type=int)
+        default=1000, type=int)
     parser.add_argument(
         "-v", "--verbose", help="Increase verbosity.",
         action="store_true", default=False)
