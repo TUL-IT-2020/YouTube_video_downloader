@@ -11,6 +11,14 @@ NC = colors.NC
 
 DEBUG = True
 
+
+def get_n_random(n, array):
+    entrys = []
+    for i in range(n):
+        entrys.append(random.choice(array))
+    return entrys
+
+
 def get_path(directory, file_name="."):
     return os.path.abspath(os.path.join(os.path.dirname(__file__), directory, file_name))
 

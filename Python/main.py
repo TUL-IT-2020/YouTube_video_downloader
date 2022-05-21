@@ -1,6 +1,5 @@
 import sys
 import time
-import random
 import argparse
 import threading
 
@@ -10,13 +9,6 @@ from subtitles import *
 from non_blocking_input import *
 import tools
 import colors
-
-
-def get_n_random(n, array):
-    entrys = []
-    for i in range(n):
-        entrys.append(random.choice(array))
-    return entrys
 
 
 def add_video_to_downloaded(downloaded, video, transcript):
@@ -106,11 +98,13 @@ def process_video(video_json, language, downloaded, index=None):
         print("Got: ", colors.Blue + language['title'], colors.NC)
     return download(video, transcript, downloaded)
 
+
 def check_end():
     endLock.acquire()
     value = end
     endLock.release()
     return value
+
 
 class WorkerThread(threading.Thread):
     lang_folder = "../dict"
@@ -188,16 +182,16 @@ if __name__ == '__main__':
     language = languages[selected_language]
     endLock = threading.Lock()
     worker_thread = WorkerThread(language, iterations, number_of_words)
-    
+
     end = False
     old_settings = termios.tcgetattr(sys.stdin)
-    worker_thread.start()            
+    worker_thread.start()
     try:
         tty.setcbreak(sys.stdin.fileno())
         while True:
             if isData():
                 c = sys.stdin.read(1)
-                print("You presed: ", c)
+                print("You presed:", c)
                 if c == "q":
                     endLock.acquire()
                     print("Exiting proces started...")
