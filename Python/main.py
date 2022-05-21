@@ -2,6 +2,7 @@ import sys
 import time
 import random
 import argparse
+import threading
 
 from search import *
 from video import *
@@ -50,7 +51,7 @@ def parse_args(args):
     return ret
 
 
-def download(video, transcript):
+def download(video, transcript, downloaded):
     try:
         if VERBOSE:
             print("Downloading video...")
@@ -68,7 +69,7 @@ def download(video, transcript):
     return True
 
 
-def process_video(video_json, language, language_dictionary, downloaded, index=None):
+def process_video(video_json, language, downloaded, index=None):
     language_code = language["code"]
     video = Video(video_json, language_code)
     if VERBOSE:
@@ -103,7 +104,49 @@ def process_video(video_json, language, language_dictionary, downloaded, index=N
 
     if DEBUG:
         print("Got: ", colors.Blue + language['title'], colors.NC)
-    return download(video, transcript)
+    return download(video, transcript, downloaded)
+
+def check_end():
+    endLock.acquire()
+    value = end
+    endLock.release()
+    return value
+
+class WorkerThread(threading.Thread):
+    lang_folder = "../dict"
+
+    def __init__(self, language, iterations, number_of_words):
+        threading.Thread.__init__(self)
+        self.language = language
+        self.iterations = iterations
+        self.number_of_words = number_of_words
+        self.language_code = language["code"]
+        path = get_path(self.lang_folder, self.language["file_name"])
+        self.all_words = read_file(path)
+        self.downloaded = {}
+
+    def run(self):
+        while not check_end():
+            words = get_n_random(self.number_of_words, self.all_words)
+            query = " ".join(words)
+            if VERBOSE:
+                print("Searched words:")
+                print(query)
+            search = VideosSearch(query, language=self.language_code)
+            if DEBUG:
+                print("Quering initial search.")
+
+            index = 0
+            for video_json in get_videos(search, self.iterations):
+                index += 1
+                time.sleep(1)
+                process_video(video_json, self.language,
+                              self.downloaded, index)
+                if check_end():
+                    break
+
+        # TODO
+        # store downloaded
 
 
 # config
@@ -143,43 +186,26 @@ if __name__ == '__main__':
     if DEBUG:
         tools.DEBUG = True
     language = languages[selected_language]
-    language_code = language["code"]
-    downloaded_file = "downloaded.data"
-    lang_folder = "../dict"
-
-    path = get_path(lang_folder, language["file_name"])
-    all_words = read_file(path)
-    language_dictionary = list_to_dict(all_words)
-
+    endLock = threading.Lock()
+    worker_thread = WorkerThread(language, iterations, number_of_words)
+    
+    end = False
     old_settings = termios.tcgetattr(sys.stdin)
-    downloaded = {}
+    worker_thread.start()            
     try:
         tty.setcbreak(sys.stdin.fileno())
-        exit = False
-        while not exit:
-            words = get_n_random(number_of_words, all_words)
-            query = " ".join(words)
-            if VERBOSE:
-                print("Searched words:")
-                print(query)
-            search = VideosSearch(query, language=language_code)
-            if DEBUG:
-                print("Quering initial search.")
-
-            index = 0
-            for video_json in get_videos(search, iterations):
-                index += 1
-
-                process_video(video_json, language,
-                              language_dictionary, downloaded, index)
-
-                # check pressed key
-                if isData():
-                    c = sys.stdin.read(1)
-                    if c == "q":
-                        exit = True
-
+        while True:
+            if isData():
+                c = sys.stdin.read(1)
+                print("You presed: ", c)
+                if c == "q":
+                    endLock.acquire()
+                    print("Exiting proces started...")
+                    end = True
+                    endLock.release()
+                    break
     finally:
+        worker_thread.join()
         print("Exiting...")
         termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
         print("Done")
