@@ -42,7 +42,8 @@ def download(video, transcript):
 
 
 def process_video(video_json, language, language_dictionary, downloaded, index=None):
-    video = Video(video_json, language)
+    language_code = language["code"]
+    video = Video(video_json, language_code)
     if VERBOSE:
         print(str(index) + '. ' + str(video))
 
@@ -59,7 +60,7 @@ def process_video(video_json, language, language_dictionary, downloaded, index=N
         return False
 
     try:
-        transcript = Subtitles(video.id, language["code"])
+        transcript = Subtitles(video.id, language_code)
     except Exception as e:
         print(colors.Yellow + "Warning:" + colors.NC,
               "Subtitles are disabled for this video")
@@ -70,7 +71,7 @@ def process_video(video_json, language, language_dictionary, downloaded, index=N
             print(transcript)
 
     # does not have valid language trancritpion
-    if not transcript.has_language(language["code"]):
+    if not transcript.has_language(language_code):
         return False
 
     if DEBUG:
@@ -166,7 +167,7 @@ if __name__ == '__main__':
             for video_json in get_videos(search, iterations):
                 index += 1
 
-                process_video(video_json, language_code,
+                process_video(video_json, language,
                               language_dictionary, downloaded, index)
 
                 # check pressed key
