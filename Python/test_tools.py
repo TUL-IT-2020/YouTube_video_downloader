@@ -58,7 +58,9 @@ def test_is_in_language_old(text_valid, text):
     [True, "Simpsonovi - Vířivka"],
     [True, "Wot cz - Operace Overlord + trochu času navíc / Novinky a Speciály"],
     [False, "Our Miss Brooks: Connie the Work Horse / Babysitting for Three / Model School Teacher"],
-    [False, "Angolan Civil War Documentary Film"]
+    [False, "Angolan Civil War Documentary Film"],
+    [False, "ԽՈՒՏՈՒՏ SHOW ԺԱՌԱՆԳՈՐԴԸ:"],
+    [False, "ዘማሪ ኤፍሬም አለሙና አገልጋይ ዮናታን አክሊሉ ድንቅ አምልኮ ሁላችሁም ተባረኩበት OCT 7,2019 MARSIL TV WORLDWIDE"]
 ])
 def test_is_in_language(text_valid, text):
     language_code = "cs"
