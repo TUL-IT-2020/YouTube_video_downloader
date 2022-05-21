@@ -4,10 +4,10 @@ import random
 import argparse
 
 from search import *
-from tools import *
 from video import *
 from subtitles import *
 from non_blocking_input import *
+import tools
 import colors
 
 
@@ -46,10 +46,7 @@ def parse_args(args):
     if args.language is None:
         parser.error("Language must be selected!")
 
-    # TODO
-    DEBUG = args.debug
-    VERBOSE = args.verbose
-    ret = [args.language, args.words, args.iterations]
+    ret = [args.language, args.words, args.iterations, args.debug, args.verbose]
     return ret
 
 
@@ -58,7 +55,7 @@ def download(video, transcript):
         if VERBOSE:
             print("Downloading video...")
         video.save(video.id + "_" + video.title)
-        #video.save(video.id)
+        # video.save(video.id)
         if VERBOSE:
             print("Downloading transcript...")
         transcript.save(video.id, plain_text=True)
@@ -109,7 +106,6 @@ def process_video(video_json, language, language_dictionary, downloaded, index=N
     return download(video, transcript)
 
 
-
 # config
 DEBUG = False
 VERBOSE = False
@@ -142,7 +138,8 @@ languages = {
 }
 
 if __name__ == '__main__':
-    selected_language, number_of_words, iterations = parse_args(sys.argv[1:])
+    selected_language, number_of_words, iterations, DEBUG, VERBOSE = parse_args(
+        sys.argv[1:])
     if DEBUG:
         tools.DEBUG = True
     language = languages[selected_language]
@@ -165,7 +162,6 @@ if __name__ == '__main__':
             if VERBOSE:
                 print("Searched words:")
                 print(query)
-            time.sleep(2)
             search = VideosSearch(query, language=language_code)
             if DEBUG:
                 print("Quering initial search.")
