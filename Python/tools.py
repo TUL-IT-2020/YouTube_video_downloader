@@ -44,11 +44,15 @@ def is_in_language_old(language: dict, text: string, min_matches: int = 1):
     return True if matches >= min_matches else False
 
 def is_in_language(language: string, text: string, threshold: float = 0.5):
-    detected_languges_list = langdetect.detect_langs(text)
-    detected_languges = {entry.lang:entry.prob for entry in detected_languges_list}
-    if DEBUG:
-        print(detected_languges)
-    probability = detected_languges.get(language, 0)
+    try:
+        detected_languges_list = langdetect.detect_langs(text)
+        detected_languges = {entry.lang:entry.prob for entry in detected_languges_list}
+        if DEBUG:
+            print(detected_languges)
+        probability = detected_languges.get(language, 0)
+    except Exception as e:
+        print(colors.Red + "ERROR:" + colors.NC, e)
+        probability = 0
     return True if probability > threshold else False
 
 def list_to_dict(l: list, value : bool = True):
