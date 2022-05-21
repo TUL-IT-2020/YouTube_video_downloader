@@ -46,25 +46,26 @@ def test_is_in_language_old(text_valid, text):
     path = get_path("../dict", "czech.txt")
     dictionary = list_to_dict(read_file(path))
     matches = words_matches(dictionary, text)
-    if DEBUG:
-        print(matches)
+    print(matches)
     assert text_valid == is_in_language_old(dictionary, text, min_matches)
 
 
 @pytest.mark.parametrize('text_valid, text', [
     [True, "Inside Star Citizen: Budoucnost vesmírného boje"],
     [True, "včelařství S receptem zesnulého Muhsina Dogaroğlua."],
-    [False, "Our Miss Brooks: Connie the Work Horse / Babysitting for Three / Model School Teacher"],
-    [False, "Angolan Civil War Documentary Film"],
     [True, "Modern Horizons 2: neuvěřitelné rozšíření Magic The Gathering v 30 krabicích"],
     [True, "Vražedná přísaha(2021)Thiller CZdabing"],
     [True, "Simpsonovi - Vířivka"],
+    [True, "Wot cz - Operace Overlord + trochu času navíc / Novinky a Speciály"],
+    [False, "Our Miss Brooks: Connie the Work Horse / Babysitting for Three / Model School Teacher"],
+    [False, "Angolan Civil War Documentary Film"]
 ])
 def test_is_in_language(text_valid, text):
     language_code = "cs"
-    assert text_valid == is_in_language(language_code, text)
+    assert text_valid == is_in_language(language_code, text, 0.1)
 
 """
 
+    [True, "MUSITE ZKUSIT!! Trenink na nohy - Martin Mester IFBB PRO"],
     [False, "ODESSA MARKET as PRIVACE CEN. Takovou jahodu jsem ještě neviděla!"]
 """

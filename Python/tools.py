@@ -9,6 +9,8 @@ Red = colors.IRed
 Green = colors.IGreen
 NC = colors.NC
 
+DEBUG = True
+
 def get_path(directory, file_name="."):
     return os.path.abspath(os.path.join(os.path.dirname(__file__), directory, file_name))
 
@@ -44,7 +46,8 @@ def is_in_language_old(language: dict, text: string, min_matches: int = 1):
 def is_in_language(language: string, text: string, threshold: float = 0.5):
     detected_languges_list = langdetect.detect_langs(text)
     detected_languges = {entry.lang:entry.prob for entry in detected_languges_list}
-    print(detected_languges)
+    if DEBUG:
+        print(detected_languges)
     probability = detected_languges.get(language, 0)
     return True if probability > threshold else False
 

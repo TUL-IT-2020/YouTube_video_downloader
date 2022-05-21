@@ -111,9 +111,8 @@ def process_video(video_json, language, language_dictionary, downloaded, index=N
 
 
 # config
-DEBUG = True
-VERBOSE = True
-DICT_MATCH = 2
+DEBUG = False
+VERBOSE = False
 """
 "title" : ,
 "code" : ,
@@ -125,6 +124,11 @@ languages = {
         "code": "cs",
         "file_name": "czech.txt"
     },
+    "SK": {
+        "title": "Slovak",
+        "code": "sk",
+        "file_name": "slovak.txt"
+    },
     "EN": {
         "title": "English",
         "code": "en",
@@ -133,13 +137,14 @@ languages = {
     "NO": {
         "title": "Norsk",
         "code": "no",
-        "file_name": None
+        "file_name": "norsk.txt"
     }
 }
 
 if __name__ == '__main__':
     selected_language, number_of_words, iterations = parse_args(sys.argv[1:])
-
+    if DEBUG:
+        tools.DEBUG = True
     language = languages[selected_language]
     language_code = language["code"]
     downloaded_file = "downloaded.data"
@@ -185,9 +190,7 @@ if __name__ == '__main__':
 
 """
 Ukladat navrhovaná slová
-Lepší detekce jazyka z názvu videa
 Ukládat log
-fasttext
 
 cca 30-100 souborů
 Jazyky k analíze:
