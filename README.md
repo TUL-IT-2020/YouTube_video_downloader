@@ -7,16 +7,23 @@
 
 ## Cíl projektu
 
-Složitost 
+Popsat problém.
 
-Způsob řešení
+Postup řešení
 Nástroje
+Řešení verze 1.
 Uvažovaná řešení
 Co nikam nevedlo
 
+Řešení verze 2.
 Odevzdávané řešení
-Uživatelksý manuál
-
+### Uživatelský manuál
+#### Instalace
+Zdrojové kódy je možné stáhnout z GitHub repozitáře [zde](https://github.com/elPytel/YouTube_video_downloader). Pro instalaci na Linuxových strojích lze využít Bashový script uložený v adresáři Python. Po jeho spuštění se nainstalují všechny potřebné knihovny pro spuštění programu napsaného v jazyce Python.
+#### Ovládání
+Aplikace disponuje pouze terminálovým rozhraním. Jednotlivé volby programu se zadávají pomocí přepínačů při spuštění. Jejich zpracování je provedeno pomocí standardního modulu **argparse**, díky tomu je vstup poměrně robustní a nezáleží na pořadí zadaných přepínačů. 
+Výpis z konzole pro volbu *-h* "help":
+TODO
 ## Analýza výsledků
 Rychlost a úspěšnost
 Tabulka 
@@ -39,8 +46,12 @@ jazyk v češtině, titulky v češtině, nesouhlasí
 
 ## Závěr
 ## Vyhlídky do budoucna
+## Zdroje
+Při programování jsem čerpal z oficiální dokumentace jednotlivých Pythonovskcýh modulů, jejich příslušných GitHubových repozitářů a StackOverflow.
+
 
 ## TOD
-- [ ] Ukladat navrhovaná slová
+- [ ] Ukládat navrhovaná slova
 - [ ] Ukládat log
 
+Vzorová generovaná slova
