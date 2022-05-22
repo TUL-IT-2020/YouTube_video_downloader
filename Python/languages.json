@@ -1,0 +1,22 @@
+{
+    "CS": {
+        "title": "Czech",
+        "code": "cs",
+        "file_name": "czech.txt"
+    },
+    "SK": {
+        "title": "Slovak",
+        "code": "sk",
+        "file_name": "slovak.txt"
+    },
+    "EN": {
+        "title": "English",
+        "code": "en",
+        "file_name": "engmix.txt"
+    },
+    "NO": {
+        "title": "Norsk",
+        "code": "no",
+        "file_name": "norsk.txt"
+    }
+}

@@ -1,14 +1,25 @@
 import sys
 import time
+import json
 import argparse
 import threading
 
+import tools
+import colors
 from search import *
 from video import *
 from subtitles import *
 from non_blocking_input import *
-import tools
-import colors
+
+
+def create_file_structure(path, languages: dict):
+    if not os.path.exists(path):
+        os.mkdir(path)
+    for key in languages:
+        language_code = language["code"]
+        lang_path = get_path(folder, language_code)
+        if not os.path.exists(lang_path):
+            os.mkdir(lang_path)
 
 
 def add_video_to_downloaded(downloaded, video, transcript):
@@ -43,7 +54,7 @@ def parse_args(args):
     return ret
 
 
-def download(video, transcript, downloaded):
+def download(video, transcript, downloaded: dict):
     try:
         if VERBOSE:
             print("Downloading video...")
@@ -61,7 +72,7 @@ def download(video, transcript, downloaded):
     return True
 
 
-def process_video(video_json, language, downloaded, index=None):
+def process_video(video_json, language: dict, downloaded: dict, index=None):
     match = 0.3
     language_code = language["code"]
     video = Video(video_json, language_code)
@@ -110,7 +121,7 @@ def check_end():
 class WorkerThread(threading.Thread):
     lang_folder = "../dict"
 
-    def __init__(self, language, iterations, number_of_words):
+    def __init__(self, language, iterations: int, number_of_words: int):
         threading.Thread.__init__(self)
         self.language = language
         self.iterations = iterations
@@ -146,40 +157,22 @@ class WorkerThread(threading.Thread):
 # config
 DEBUG = False
 VERBOSE = False
-"""
-"title" : ,
-"code" : ,
-"file_name" :
-"""
-languages = {
-    "CS": {
-        "title": "Czech",
-        "code": "cs",
-        "file_name": "czech.txt"
-    },
-    "SK": {
-        "title": "Slovak",
-        "code": "sk",
-        "file_name": "slovak.txt"
-    },
-    "EN": {
-        "title": "English",
-        "code": "en",
-        "file_name": "engmix.txt"
-    },
-    "NO": {
-        "title": "Norsk",
-        "code": "no",
-        "file_name": "norsk.txt"
-    }
-}
+languages_file = "languages.json"
+folder = "../download"
+
 
 if __name__ == '__main__':
     selected_language, number_of_words, iterations, DEBUG, VERBOSE = parse_args(
         sys.argv[1:])
     if DEBUG:
         tools.DEBUG = True
+
+    with open(languages_file) as json_file:
+        languages = json.load(json_file)
+    path = get_path(folder)
+    create_file_structure(path, languages)
     language = languages[selected_language]
+
     endLock = threading.Lock()
     worker_thread = WorkerThread(language, iterations, number_of_words)
 
@@ -205,43 +198,5 @@ if __name__ == '__main__':
         print("Done")
 
 """
-Ukladat navrhovaná slová
-Ukládat log
-
-cca 30-100 souborů
-Jazyky k analíze:
-Projít ručo/algoritmicky
-Češtině, Slověnština, Němčina, Angličtina
-Bez analízy:
-Noršitna Švédština
-
-
-analýza funkčnosti
-tabulka
-česke, české video
-neni česke, česke video
-české vide, titulky nejsou česke .....
-jazyk v češtině, titulky v češtině, nesouhlasí
-ǔspšnost na češtině taková a taková
-
-15-20
-Titulní strana
-Zadání
-Cíl projektu
-Složitost 
-
-Způsob řešení
-Nástroje
-Uvažovaná řešení
-Co nikam nevdlo
-
-Odevzdávané řešení
-Uživatelksý manuál
-
-Analýza výsledků
-Rychlost a úspěšnost
-Tabulka 
-Závěr
-Vyhlídky do budoucna
-
+END
 """
