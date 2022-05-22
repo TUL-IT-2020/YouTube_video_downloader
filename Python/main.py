@@ -16,7 +16,7 @@ def create_file_structure(path, languages: dict):
     if not os.path.exists(path):
         os.mkdir(path)
     for key in languages:
-        language_code = language["code"]
+        language_code = languages[key]["code"]
         lang_path = get_path(folder, language_code)
         if not os.path.exists(lang_path):
             os.mkdir(lang_path)

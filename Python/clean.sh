@@ -1,4 +1,4 @@
 #!/bin/bash
 # By Pytel
 
-rm ../download/*
+rm -r ../download/*
