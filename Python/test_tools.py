@@ -64,7 +64,7 @@ def test_is_in_language_old(text_valid, text):
 ])
 def test_is_in_language(text_valid, text):
     language_code = "cs"
-    assert text_valid == is_in_language(language_code, text, 0.3)
+    assert text_valid == is_in_language(language_code, text, 0.1)
 
 
 """
