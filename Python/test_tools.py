@@ -64,10 +64,19 @@ def test_is_in_language_old(text_valid, text):
 ])
 def test_is_in_language(text_valid, text):
     language_code = "cs"
-    assert text_valid == is_in_language(language_code, text, 0.1)
+    assert text_valid == is_in_language(language_code, text, 0.3)
+
 
 """
 
     [True, "MUSITE ZKUSIT!! Trenink na nohy - Martin Mester IFBB PRO"],
     [False, "ODESSA MARKET as PRIVACE CEN. Takovou jahodu jsem ještě neviděla!"]
 """
+
+@pytest.mark.parametrize('text_valid, text, language_code', [
+    [True, "8 fermentovaných potravin pro podporu trávení a zdraví", "sk"],
+    [True, "Ukládejte e-maily z Hotmailu na pevný disk počítače", "sk"],
+    [True, "Kde voda chutná jako víno Kapitola 1 Maine, Vermont a Massachusetts Žádný komentář", "sk"]
+])
+def test_is_in_language_with_code(text_valid, text, language_code):
+    assert text_valid == is_in_language(language_code, text, 0.3)
