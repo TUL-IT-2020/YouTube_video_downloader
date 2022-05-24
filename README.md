@@ -28,19 +28,28 @@ Má práce spočívala ve vytvoření programu, který po konfiguraci a zadání
 - stáhnutí videa a titulků
 - převod videa na pouhý audio záznam
 
-## Nástroje:
-import langdetect
-from youtube_transcript_api import YouTubeTranscriptApi as YTTA
-import yt_dlp
-from youtubesearchpython
+## Využité nástroje:
 ### Metody TDD & extrémního programování
-Testy řízené programování. Zde bylo využito knihovny [pytest](#pytest). Ve výsledku je aplikace pokryta testy pouze z nějakých 30%. To sice není mnoho, ale pokrývá to základní logiku a funkce aplikace. Pro větší pokrytí by bylo potřeba vytvoření mock tříd pro integrační otestování komunikace programu s YouTube.
+Testy řízené programování. Zde bylo využito knihovny [pytest](#pytest). Ve výsledku je aplikace pokryta testy pouze z nějakých 30%. To sice není mnoho, ale testují se základní funkce a logika aplikace. Pro větší pokrytí by bylo potřeba vytvoření mock tříd pro integrační testy komunikace programu s YouTube.
+
+### TUI - terminal user interface
+Aplikace je vybavená konzolovým aplikační rozhraní. Parsovaná přepínačů je zprostředkováno knihovnou [argparse](#argparse), která umožňuje zadávání argumentů v libovolném pořadí a automaticky generuje help výpis.
 
 ### Více vláknové programování
-threading
-### TUI - terminal user interface
-Konzolové aplikační rozhraní.
-argparse
+Aplikace využívá rozdělení do více vláken za pomocí standardního modulu [threading](#threading). V hlavním vláknu programu je řešeno čtení z konzole ("q" pro ukončení aplikace). Worker thread řeší veškerou zbylou logiku programu.
+
+### Vyhledávání videí
+Pro vyhledávání videí byla použita knihovna [youtubesearchpython](#youtubesearchpython). Velkou výhodou využití této knihovny oproti parsování informací přímo z YouTube je možnost listování na další stránky výsledků, které je na stránkách dnes řešeno pomocí responzivního webu, které je takřka nemožné obejít pomocí jednoduchého web crawleru. 
+
+### Detekce jazyka
+Jazyk z textu aplikace rozpoznává s využitím modulu [langdetect](#langdetect). Jeho velkou výhodou je jednoduché použití. Pro detekci jazyka stačí zavolat funkci `langdetect.detect_langs(text)` a ta vrátí list všech možných detekovaných jazyků s procentuální pravděpodobností.
+
+### Práce s titulky
+Po experimentování s několika knihovnami určenými pro práci s YouTube titulky vyvstala knihovna [youtube_transcript_api](#youtube_transcript_api) jako ideální volba. Zejména díky snadnému dotazování seznam jazyků použitých titulků a možnost stáhnutí dat jak ve formátu s časovou značkou, tak i čistě jako pouhý text. V obou případech je výstup uložen do souboru .txt (prostý text). Zde jiné knihovny umožňovali uložení pouze v proprietárních formátech, jenž byli vyhodnoceny jako nevhodné s ohledem pro další zpracování. 
+
+### Stahování videí
+To je zajištěno funkcionalitami v modulu [yt_dlp](#yt_dlp). Původně byl vnitřní algoritmus aplikace postaven na knihovně [youtube-dl](https://github.com/ytdl-org/youtube-dl), ale YouTube nejspíše nebyl smířen s jejím velkým rozšířením pro automatické stahování videí a proto zavedl opatření, která omezila rychlost stahování na ~300kbps, která je pro získávaní velkého objemu dat naprosto nepoužitelná. Tento problém naštěstí obchází výše zmíněná knihovna yt_dlp a díky tomu že je forkem youtube-dl (vychází z jejích zdrojových kódů), tak se ani nemění aplikační interface a je možné použít všechny funkce tak jako by se jednalo o původní knihovnu. 
+Knihovna také umožňuje převedení formátu videa po dokončení jeho stahování. Aplikace je tak může hned po uložení automaticky převést do formátu .wav.  
 
 ## Postup řešení
 ### Řešení v Bashi
@@ -88,11 +97,11 @@ Pokročilá volba s angličtinou:
 $ python3 main.py -v -d -l EN -w 4 -i 100
 ```
 Provede se nastavení: 
-- *verbose* pro podrobnější výpisy do konzole
-- *debug* přidání debugovacích hlášení
-- *EN* pro vyhledávání se zvolí angličtina
-- *words*, počet náhodně vygenerovaných slov bude 4
-- *iterations*, počet vyhodnocených výsledků každého dotazu bude 100
+- ***verbose*** pro podrobnější výpisy do konzole
+- ***debug*** přidání debugovacích hlášení
+- ***EN*** pro vyhledávání se zvolí angličtina
+- ***words***, počet náhodně vygenerovaných slov bude 4
+- ***iterations***, počet vyhodnocených výsledků každého dotazu bude 100
 
 ### Další jazyky
 Jazyk se vybírá pomocí dvoupísmenného kódu ISO 639-1. Seznam kódů k jednotlivým jazykům: [zde](https://www.science.co.il/language/Codes.php). Pro přidání dalšího jazyka do aplikace je zapotřebí stáhnout wordlist ve formátů .txt a kódování UTF-8, ze kterého se budou generovat náhodná slovní spojení a ten uložit do adresáře **dict/**. Dále je potřeba aktualizovat konfigurační soubor **Python/languages.json**.
@@ -123,10 +132,17 @@ Přidání detekce jazyka ze zvukové stopy. Grafická nadstavba konzole. Vícev
 
 ## Zdroje
 Při programování jsem čerpal z oficiální dokumentace jednotlivých Pythonovských modulů, jejich příslušných GitHubových repozitářů a StackOverflow.
+Použité knihovny:
+- <a name="pytest"></a>[pytest](https://pypi.org/project/pytest/)
+- <a name="argparse"></a>[argparse](https://pypi.org/project/argparse/)
+- <a name="threading"></a>[threading](https://docs.python.org/3/library/threading.html)
+- <a name="youtubesearchpython"></a>[youtubesearchpython](https://pypi.org/project/youtube-search-python/)
+- <a name="langdetect"></a>[langdetect](https://pypi.org/project/langdetect/)
+- <a name="youtube_transcript_api"></a>[youtube_transcript_api](https://pypi.org/project/youtube-transcript-api/)
+- <a name="yt_dlp"></a>[yt_dlp](https://pypi.org/project/yt-dlp/)
 
-<a name="pytest"></a>[pytest](https://pypi.org/project/pytest/)
 
-## TOD
+## TODO
 - [ ] Ukládat navrhovaná slova
 - [ ] Ukládat log
 
