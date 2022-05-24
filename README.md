@@ -53,9 +53,31 @@ Knihovna také umožňuje převedení formátu videa po dokončení jeho stahov�
 
 ## Postup řešení
 ### Řešení v Bashi
-Řešení verze 1.
-Uvažovaná řešení
-Co nikam nevedlo
+Zprvu byl pro řešení zvolen skriptovací jazyk Bash. Ten má mnoho výhod, umožňuje volat konzolové programy, jako kdyby to byli jeho funkce a díky tomu lze snadno získat pokročilé možnosti. Mezi nimi například stažení videa či audia pomocí programu youtube-dl zapsaného na jeden řádek. Je také snadné v Bashi vytvořit vysoce paralelní aplikaci pomocí spouštění podprocesů řešící jednotlivé dílčí úkony. Velmi snadná je také práce s adresáři a soubory, jelikož základní příkazová výbava Bashe je tvořena nástroji pro ovládání počítače z terminálu což obnáší pohyb adresářovou strukturou, mazání a vytváření souborů, jejich výpis a další. 
+
+Při návrhu algoritmu bylo provedeno rozhodnutí rozdělit problém na dvě čísti:
+Nejprve prohledat YouTube a vytvořit databázi o co největším počtu záznamů, které by tvořil formát:
+- id videa
+- id kanálu
+- název videa
+- jazyk videa
+- seznam jazyků dostupných titulků
+A ve poslední řadě také záznam o všech našepnávaných videích na stejné stránce.
+
+A ve druhém kroku napsat ještě jiný program, který by po zadání již specifického jazyka databázi prohledal a stáhl všechna uložená videa která splní kriteria (videa s titulky).
+Výhodou tohoto řešení by bylo opakované využití záznamů z prvního kroku pro hledání různých jazyků.
+
+Při implementaci nastalo rovnou několik nečekaný problémů.
+První při analýze dat.
+Když byl dokončen kód k prohledávání YouTube a ukládání záznamů o 
+videích. A část skriptů pro práci s youtube-dl byla rozpracována tak, že se již podařilo stahovat jak záznam videa převedeného do formátu .wav, tak i titulky. 
+Program byl nechán běžet přes víkend a zvládl stáhnout něco přes 200k záznamů. Při jejich podrobnějším prozkoumání byl zvolen jazyk Čeština pro snadnou validaci dat. Počet vyfiltrovaných videí splňují kriterium českých titulek byl přibližně ~350, to se nejevilo zas tak zle, jenže u žádného z nich se nevyskytoval český název, co více, tak naprostá většina z nich měla názvy v úplně cizích abecedách. 
+Co říci, do algoritmu byla vložena větší naději na úspěch. Problém byl patrně v tom, že youtube algoritmus si pamatoval všechna předchozí dotazování a při prohledávání do hloubky, padal čím dál tím víc do zaječí nory. 
+
+Druhý problém byl při samotném běhu programu. 
+Dotazování na servery YouTubu vytěžovalo počítač více, než byl prvotní předpoklad. Důvodem byl patrně zvolený programovací jazyk, který nikdy nebyl zamýšlen pro časově kritické úkoly a tak interpretovaný Bash byl prostě pro danou úlohu příliš pomalý a paměťově náročný.
+
+Pod tíhou dosavadních výsledků a s vyplýtvanou více než polovinou časové dotace pro řešení úkolu bylo učiněno nelehké rozhodnutí. A to opustit dosavadní práci a začít sice od znova, avšak vydat se naprosto jinou cestou, jenž se snad, jak se ukáže s odstupem času, také nebude jevit slepou.
 
 ### Řešení v Pythonu
 Řešení verze 2.
