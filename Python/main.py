@@ -151,7 +151,7 @@ class WorkerThread(threading.Thread):
                     break
 
         # TODO
-        # store downloaded
+        # store downloaded info data
 
 
 # config
