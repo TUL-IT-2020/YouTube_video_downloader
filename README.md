@@ -177,9 +177,9 @@ Použité knihovny:
 - <a name="yt_dlp"></a>[yt_dlp](https://pypi.org/project/yt-dlp/)
 
 ## Přílohy
-- [Tabulka analýza CZ](/doc/CS.html)
-- [Tabulka analýza SK](/doc/SK.html)
-- [Tabulka analýza EN](/doc/EN.html)
+- [Tabulka analýza CZ](https://htmlpreview.github.io/?https://github.com/elPytel/YouTube_video_downloader/blob/main/doc/CS.html)
+- [Tabulka analýza SK](https://htmlpreview.github.io/?https://github.com/elPytel/YouTube_video_downloader/blob/main/doc/SK.html)
+- [Tabulka analýza EN](https://htmlpreview.github.io/?https://github.com/elPytel/YouTube_video_downloader/blob/main/doc/EN.html)
 
 ## TODO
 - [ ] Ukládat navrhovaná slova
