@@ -142,26 +142,35 @@ Vzorový záznam:
 ```
 
 ## Analýza výsledků
-Rychlost a úspěšnost
-Tabulka 
+Postup vyhodnocování výsledků programu byl: 
+1. Zvolit jazyky k vyhledání
+2. Stáhnout statisticky významné množství dat
+3. Otestovat shodu jazyka videa a titulků
+Zvolené jazyky byli Čeština, Slovenština, Angličtina a pro otestování ve zjednodušené míře také Norština. První tři byli vybrány z důvodu jednoduchého testování výsledků. Data byla testována na shodu jazyka názvu videa, obsahu, titulek a zda odpovídá obsah vůči titulkům. 
 
-cca 30-100 souborů
-Jazyky k analýze:
-Projít ručo/algoritmicky
-Češtině, Slověnština, Němčina, Angličtina
-Bez analízy:
-Noršitna Švédština
+Plný obsah znění tabulek je uveden v [příloze](##přílohy).
 
+Tabulka shrnutí analyzovaných dat:
+| Jazyk | Název v jazyce | Video v jazyce | Titutulky v jazyce | Shoda |
+| --- | --- | --- | --- | --- |
+| CS | 100,00% | 31,58% | 96,49% | 31,58% | 
+| SK | 51,35% | 35,14% | 100,00% | 27,03% |
+| EN | 100,00% | 91,89% | 94,59% | 89,19% |
 
-analýza funkčnosti
-tabulka
-česke, české video
-neni česke, česke video
-české vide, titulky nejsou česke .....
-jazyk v češtině, titulky v češtině, nesouhlasí
-ǔspšnost na češtině taková a taková
+Jak se zprvu předpokládalo, tak pro jazyk Angličtina vychází přesnost zdaleka nejvyšší. Je to díky jeho celosvětovému rozšíření a prakticky největšímu množství nahrávek na YouTube. Nejčetnější chybou byl pro tento jazyk minimální obsah mluveného slova a tedy prakticky nulový obsah titulek.
+
+Algoritmus na češtině dosáhl úspěšnosti 31,5% při 56 kontrolovaných záznamech, což je prakticky každý třetí soubor. To není nikterak špatné s ohledem na použité technologie. Největší zastoupenou chybou zde byl výskyt sice českého názvu videa, ale jeho obsah v naprosto jiném jazyce (Angličtina / Ruština). Klíčovým krokem algoritmu je určení řeči videa na základě detekovaného jazyka názvu. V takových to případech algoritmus nutně selhává. Prakticky každé stažené video v češtině s titulky mělo též obsahovou shodu v záznamu a titulkách. 
+
+Stáhnout 30 českých vidí trvalo přibližně hodinu, z toho plyne že očekávatelný čas potřebný pro nalezení a stažení jednoho videa jsou v 2 minuty. 
+
+Pro Slovenštinu byl naneštěstí zvolen nevhodný word list, který obsahoval pouze slova bez diakritiky. To spolu s dalšími vlivy vedlo na to, že prakticky polovina názvů nalezených videí byla v Češtině na místo Slovenštiny. 
+
+Často se v příkladech kdy nesedí jazyk videa k jeho názvu objevují strojově generované titulky, které nejsou příliš dobré a jejich existence rozhodování algoritmu mátla.
+
 
 ## Závěr
+
+
 ### Možné rozšíření do budoucna
 Přidání detekce jazyka ze zvukové stopy. Grafická nadstavba konzole. Vícevláknová implementace části kódu dedikovaného pro stahování a zpracování videí pro urychlení běhu kódu na vícevláknových platformách. Možnost upravit hranici rozpoznání na bázi jednotlivých jazyků.
 
@@ -184,6 +193,3 @@ Použité knihovny:
 ## TODO
 - [ ] Ukládat navrhovaná slova
 - [ ] Ukládat log
-
-Vzorová generovaná slova
-Často se v příkladu kdy nesedí jazyk videa k jeho názvu objevují strojově generované titulky, které za moc nestojí.
