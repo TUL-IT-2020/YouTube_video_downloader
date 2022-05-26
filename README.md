@@ -67,29 +67,36 @@ Nejprve prohledat YouTube a vytvořit databázi o co největším počtu záznam
 A ve druhém kroku napsat ještě jiný program, který by po zadání již specifického jazyka databázi prohledal a stáhl všechna uložená videa která splní kriteria (videa s titulky).
 Výhodou tohoto řešení by bylo opakované využití záznamů z prvního kroku pro hledání různých jazyků.
 
-Při implementaci nastalo rovnou několik nečekaný problémů.
-První při analýze dat.
+Při implementaci nastalo rovnou několik nečekaný problémů:
+1. První při analýze dat.
+
 Když byl dokončen kód k prohledávání YouTube a ukládání záznamů o 
 videích. A část skriptů pro práci s youtube-dl byla rozpracována do takové úrovně, že se již podařilo stahovat jak záznam videa převedeného do formátu .wav, tak i titulky. 
 Program byl nechán běžet přes víkend a zvládl stáhnout něco přes 200k záznamů. Při jejich podrobnějším prozkoumání byl zvolen jazyk Čeština pro snadnou validaci dat. Počet vyfiltrovaných videí splňujících kriterium českých titulek byl přibližně ~350, to se nejevilo zas tak zle, jenže u žádného z nich se nevyskytoval český název, co více, tak naprostá většina z nich měla názvy v úplně cizích abecedách. 
 Co říci, do algoritmu byla vložena větší naději na úspěch. Problém byl patrně v tom, že youtube algoritmus si pamatoval všechna předchozí dotazování a při prohledávání do hloubky, padal čím dál tím víc do zaječí nory. 
 
-Druhý problém byl při samotném běhu programu. 
+2. Druhý problém byl při samotném běhu programu. 
+
 Dotazování na servery YouTubu vytěžovalo počítač více, než byl prvotní předpoklad. Tím důvodem se patrně stal zvolený programovací jazyk, který nikdy nebyl zamýšlen pro časově kritické úkoly a tak interpretovaný Bash byl prostě pro danou úlohu příliš pomalý a paměťově náročný.
 
 Pod tíhou dosavadních výsledků a s vyplýtvanou více než polovinou časové dotace pro řešení úkolu bylo učiněno nelehké rozhodnutí. A to opustit dosavadní práci a začít sice od znova, avšak vydat se naprosto jinou cestou, jenž se snad, jak se ukáže s odstupem času, také nebude jevit slepou.
 
 ### Řešení v Pythonu
 Vzhledem k tomu, že předchozí řešení nepřineslo uspokojivé výsledky, byl nový zvolený směr založen na změně programovacího jazyka, přechod na Python, a také změně přístupu. Místo vytvoření databáze videí s titulky stejně tak jako bez titulků určené pro další filtrování, bylo rozhodnuto dát velký důraz na seed vyhledávání. Nový algoritmus si kladl za cíl nejdříve vytvořit dotaz v kýženém jazyce a poté vyselektovat všechny videa s titulky a ty stáhnout.
+
 Podrobný postup algoritmu:
+
 ![Vývojový diagram](assets/Youtube_video_downloader.svg)
 1. Vytvoření dotazu
+
 Nejprve se vytvoří dotaz. Ten se skládá z několika (3, lze zvolit) náhodně vybraných slov z word listu. To by mělo prioritizovat výsledky v daném jazyce.
 
 2. Vyhledávání videí v požadovaném jazyce
+
 Dotaz se na YouTube odesílá pomocí knihovny youtubesearchpython. Program se doptává na další a další nalezený videa, dokud nejsou všechna večerpána, nebo program nenarazí na iterační strop. 
 
 3. detekce jazyka
+
 Po získání id videa se lze dotázat na jeho další vlastnosti. Mezi ně patří:
 - id videa
 - id kanálu
@@ -100,9 +107,11 @@ Po získání id videa se lze dotázat na jeho další vlastnosti. Mezi ně pat�
 Algoritmus detekuje jazyk na základě názvu. 
 
 4. selekce nahrávek bez titulků v požadovaném jazyce
+
 Pokud jsou pro jazyk nalezeny titulky, tak se přistoupí ke stahování.
 
 6. stažení videa a titulků
+
 Posledním krokem algoritmu je stažení videa a jeho převod do formátu .wav (audio) a stažení titulků do plain textu.
 
 ## Uživatelský manuál
@@ -192,6 +201,7 @@ Postup vyhodnocování výsledků programu byl:
 1. Zvolit jazyky k vyhledání
 2. Stáhnout statisticky významné množství dat
 3. Otestovat shodu jazyka videa a titulků
+
 Zvolené jazyky byli Čeština, Slovenština, Angličtina a pro otestování ve zjednodušené míře také Norština. První tři byli vybrány z důvodu jednoduchého testování výsledků. Data byla testována na shodu jazyka názvu videa, obsahu, titulek a zda odpovídá obsah vůči titulkům. 
 
 Plný obsah znění tabulek je uveden v [příloze](##přílohy).
@@ -234,7 +244,3 @@ Použité knihovny:
 - [Tabulka analýza CZ](https://htmlpreview.github.io/?https://github.com/elPytel/YouTube_video_downloader/blob/main/docs/CS.html)
 - [Tabulka analýza SK](https://htmlpreview.github.io/?https://github.com/elPytel/YouTube_video_downloader/blob/main/docs/SK.html)
 - [Tabulka analýza EN](https://htmlpreview.github.io/?https://github.com/elPytel/YouTube_video_downloader/blob/main/docs/EN.html)
-
-## TODO
-- [ ] Ukládat navrhovaná slova
-- [ ] Ukládat log
