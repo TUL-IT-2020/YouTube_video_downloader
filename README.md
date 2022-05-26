@@ -81,16 +81,35 @@ Pod tíhou dosavadních výsledků a s vyplýtvanou více než polovinou časov�
 
 ### Řešení v Pythonu
 Vzhledem k tomu, že předchozí řešení nepřineslo uspokojivé výsledky, byl nový zvolený směr založen na změně programovacího jazyka, přechod na Python, a také změně přístupu. Místo vytvoření databáze videí s titulky stejně tak jako bez titulků určené pro další filtrování, bylo rozhodnuto dát velký důraz na seed vyhledávání. Nový algoritmus si kladl za cíl nejdříve vytvořit dotaz v kýženém jazyce a poté vyselektovat všechny videa s titulky a ty stáhnout.
-Vytvoření dotazu
-Vyhledávání videí v požadovaném jazyce
-detekce jazyka
-selekce nahrávek bez titulků v požadovaném jazyce
+Podrobný postup algoritmu:
+![Vývojový diagram](assets/Youtube_video_downloader.svg)
+1. Vytvoření dotazu
+Nejprve se vytvoří dotaz. Ten se skládá z několika (3, lze zvolit) náhodně vybraných slov z word listu. To by mělo prioritizovat výsledky v daném jazyce.
+
+2. Vyhledávání videí v požadovaném jazyce
+Dotaz se na YouTube odesílá pomocí knihovny youtubesearchpython. Program se doptává na další a další nalezený videa, dokud nejsou všechna večerpána, nebo program nenarazí na iterační strop. 
+
+3. detekce jazyka
+Po získání id videa se lze dotázat na jeho další vlastnosti. Mezi ně patří:
+- id videa
+- id kanálu
+- název videa
+- klíčová slova
+- jazyky dostupných titulků
+
+Algoritmus detekuje jazyk na základě názvu. 
+
+4. selekce nahrávek bez titulků v požadovaném jazyce
+Pokud jsou pro jazyk nalezeny titulky, tak se přistoupí ke stahování.
+
+6. stažení videa a titulků
+Posledním krokem algoritmu je stažení videa a jeho převod do formátu .wav (audio) a stažení titulků do plain textu.
 
 ## Uživatelský manuál
 ### Instalace
 Zdrojové kódy je možné stáhnout z GitHub repozitáře [zde](https://github.com/elPytel/YouTube_video_downloader). Pro instalaci na Linuxových strojích lze využít Bashový script uložený v adresáři Python. Po jeho spuštění se nainstalují všechny potřebné knihovny pro spuštění programu napsaného v jazyce Python.
 ### Ovládání
-Aplikace disponuje pouze terminálovým rozhraním. Jednotlivé volby programu se zadávají pomocí přepínačů při spuštění. Jejich zpracování je provedeno pomocí standardního modulu **argparse**, díky tomu je vstup poměrně robustní a nezáleží na pořadí zadaných přepínačů. 
+Aplikace disponuje pouze terminálovým rozhraním. Jednotlivé volby programu se zadávají pomocí přepínačů při spuštění. Jejich zpracování je provedeno pomocí standardního modulu **argparse**, díky tomu je vstup poměrně robustní a nezáleží na pořadí zadaných přepínačů. Ovládání aplikace je v jazyce Angličtina.
 Výpis z konzole pro volbu *-h* "help":
 ```Bash
 $ python3 main.py -h
@@ -127,6 +146,29 @@ Provede se nastavení:
 - ***words***, počet náhodně vygenerovaných slov bude 4
 - ***iterations***, počet vyhodnocených výsledků každého dotazu bude 100
 
+Vzorový výstup do konzole:
+```Bash
+Searched words:
+nechejme jednotne mizera
+Quering initial search.
+Search does not have more videos.
+Searched words:
+hojil lišena vzbouřen
+Quering initial search.
+1 - Video: 
+Title: George Orwell-Farma zvířat(CZ titulky)-animovaný film 
+Duration: 1:09:27        
+ID: 5kVPz2_GEbc
+id:              Language:       Code:   Generated:
+5kVPz2_GEbc      Čeština         cs      False
+
+Got:  Czech
+Downloading video...
+Done downloading, now converting ...
+Downloading transcript...
+Downloading is finished.
+```
+
 ### Další jazyky
 Jazyk se vybírá pomocí dvoupísmenného kódu ISO 639-1. Seznam kódů k jednotlivým jazykům: [zde](https://www.science.co.il/language/Codes.php). Pro přidání dalšího jazyka do aplikace je zapotřebí stáhnout wordlist ve formátů .txt a kódování UTF-8, ze kterého se budou generovat náhodná slovní spojení a ten uložit do adresáře **dict/**. Dále je potřeba aktualizovat konfigurační soubor **Python/languages.json**.
 
@@ -140,6 +182,10 @@ Vzorový záznam:
 	}
 }
 ```
+- **CS** je klíč pro volbu jazyka
+- **title** je vypisovaný název
+- **code** je zkratka jazyka dle ISO 639-1 normy
+- **file_name** je soubor s word listem
 
 ## Analýza výsledků
 Postup vyhodnocování výsledků programu byl: 
@@ -151,11 +197,11 @@ Zvolené jazyky byli Čeština, Slovenština, Angličtina a pro otestování ve 
 Plný obsah znění tabulek je uveden v [příloze](##přílohy).
 
 Tabulka shrnutí analyzovaných dat:
-| Jazyk | Název v jazyce | Video v jazyce | Titutulky v jazyce | Shoda |
-| --- | --- | --- | --- | --- |
-| CS | 100,00% | 31,58% | 96,49% | 31,58% | 
-| SK | 51,35% | 35,14% | 100,00% | 27,03% |
-| EN | 100,00% | 91,89% | 94,59% | 89,19% |
+| Jazyk | Počet | Název v jazyce | Video v jazyce | Titutulky v jazyce | Shoda |
+| --- | --- | --- | --- | --- | --- |
+| EN | 36 | 100,00% | 91,89% | 94,59% | 89,19% |
+| CS | 54 | 100,00% | 31,58% | 96,49% | 31,58% | 
+| SK | 36 | 51,35% | 35,14% | 100,00% | 27,03% |
 
 Jak se zprvu předpokládalo, tak pro jazyk Angličtina vychází přesnost zdaleka nejvyšší. Je to díky jeho celosvětovému rozšíření a prakticky největšímu množství nahrávek na YouTube. Nejčetnější chybou byl pro tento jazyk minimální obsah mluveného slova a tedy prakticky nulový obsah titulek.
 
@@ -163,13 +209,12 @@ Algoritmus na češtině dosáhl úspěšnosti 31,5% při 56 kontrolovaných zá
 
 Stáhnout 30 českých vidí trvalo přibližně hodinu, z toho plyne že očekávatelný čas potřebný pro nalezení a stažení jednoho videa jsou v 2 minuty. 
 
-Pro Slovenštinu byl naneštěstí zvolen nevhodný word list, který obsahoval pouze slova bez diakritiky. To spolu s dalšími vlivy vedlo na to, že prakticky polovina názvů nalezených videí byla v Češtině na místo Slovenštiny. 
+Pro Slovenštinu byl naneštěstí zvolen nevhodný word list, který obsahoval pouze slova bez diakritiky. To spolu s dalšími vlivy vedlo na to, že prakticky polovina názvů nalezených videí byla v Češtině na místo Slovenštiny. Vyhledávaní vhodných videi bylo ve srovnání, například s Češtinou, lehce pomalejší. 
 
 Často se v příkladech kdy nesedí jazyk videa k jeho názvu objevují strojově generované titulky, které nejsou příliš dobré a jejich existence rozhodování algoritmu mátla.
 
-
 ## Závěr
-
+V rámci mé práce jsem dospěl k závěru, že YouTube jako zdroj dat pro vytěžování lze použít. A to za předpokladu, že za touto aplikací, bude ještě sedět člověk, který provede finální verifikaci, zda jsou data dobře rozpoznaná. Oproti jinému přístupu přináší tu výhodu, že člověku odpadá práce s vyhledáváním videí a jejich manuální převod do žádaného formátu. U aplikace také lze očekávat, že čím více je hledaný jazyk rozšířen, tím vyšší bude nejen rychlost hledání videí, ale i úspěšnost jejich automatické anotace. 
 
 ### Možné rozšíření do budoucna
 Přidání detekce jazyka ze zvukové stopy. Grafická nadstavba konzole. Vícevláknová implementace části kódu dedikovaného pro stahování a zpracování videí pro urychlení běhu kódu na vícevláknových platformách. Možnost upravit hranici rozpoznání na bázi jednotlivých jazyků.
