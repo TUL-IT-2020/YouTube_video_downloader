@@ -1,16 +1,5 @@
 # YouTube_video_downloader
 ## Tvorba trénovacích dat pro strojové učení ze záznamů na Youtube
-15-20 stran
-Osnova:
-1. Název (český i anglický), jméno autora a vedoucího, rok vypracování.
-2. Zadání.
-3. Anotace česká i anglická s klíčovými slovy.
-4. Úvod – stručné vysvětlení řešené problematiky, souvislost s praxí, stanovení cílů.
-5. Popis použitých metod (prostředků, obvodů, algoritmů, apod. s odkazy na literaturu), je
-nepřípustné opisovat texty či kopírovat obrázky z literatury bez řádné citace.
-6. Vlastní řešení konkrétního problému, tj. popis vlastních prací, výsledků apod.
-7. Shrnutí výsledků projektu a závěr (naznačení dalšího možného pokračování).
-8. Použitá literatura.
 
 ## Titulní strana
 
@@ -68,14 +57,14 @@ A ve druhém kroku napsat ještě jiný program, který by po zadání již spec
 Výhodou tohoto řešení by bylo opakované využití záznamů z prvního kroku pro hledání různých jazyků.
 
 Při implementaci nastalo rovnou několik nečekaný problémů:
-1. První při analýze dat.
+1. při analýze dat
 
 Když byl dokončen kód k prohledávání YouTube a ukládání záznamů o 
 videích. A část skriptů pro práci s youtube-dl byla rozpracována do takové úrovně, že se již podařilo stahovat jak záznam videa převedeného do formátu .wav, tak i titulky. 
 Program byl nechán běžet přes víkend a zvládl stáhnout něco přes 200k záznamů. Při jejich podrobnějším prozkoumání byl zvolen jazyk Čeština pro snadnou validaci dat. Počet vyfiltrovaných videí splňujících kriterium českých titulek byl přibližně ~350, to se nejevilo zas tak zle, jenže u žádného z nich se nevyskytoval český název, co více, tak naprostá většina z nich měla názvy v úplně cizích abecedách. 
 Co říci, do algoritmu byla vložena větší naději na úspěch. Problém byl patrně v tom, že youtube algoritmus si pamatoval všechna předchozí dotazování a při prohledávání do hloubky, padal čím dál tím víc do zaječí nory. 
 
-2. Druhý problém byl při samotném běhu programu. 
+2. problém byl i při samotném běhu programu
 
 Dotazování na servery YouTubu vytěžovalo počítač více, než byl prvotní předpoklad. Tím důvodem se patrně stal zvolený programovací jazyk, který nikdy nebyl zamýšlen pro časově kritické úkoly a tak interpretovaný Bash byl prostě pro danou úlohu příliš pomalý a paměťově náročný.
 
@@ -112,7 +101,9 @@ Pokud jsou pro jazyk nalezeny titulky, tak se přistoupí ke stahování.
 
 6. stažení videa a titulků
 
-Posledním krokem algoritmu je stažení videa a jeho převod do formátu .wav (audio) a stažení titulků do plain textu.
+Posledním krokem algoritmu je stažení videa a jeho převod do formátu .wav (audio) a stažení titulků do plain textu. 
+
+Aplikace je naprogramovaná s využitím více vláken. Jedno vlákno se stará čistě jen o vstup z klávesnice a druhý řeší zbytek (stahování z YouTube).
 
 ## Uživatelský manuál
 ### Instalace
