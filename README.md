@@ -82,7 +82,7 @@ Nejprve se vytvoří dotaz. Ten se skládá z několika (3, lze zvolit) náhodn�
 
 2. Vyhledávání videí v požadovaném jazyce
 
-Dotaz se na YouTube odesílá pomocí knihovny youtubesearchpython. Program se doptává na další a další nalezený videa, dokud nejsou všechna večerpána, nebo program nenarazí na iterační strop. 
+Dotaz se na YouTube odesílá pomocí knihovny youtubesearchpython. Program se doptává na další a další nalezená videa, dokud nejsou všechna večerpána, nebo program nenarazí na iterační strop. 
 
 3. detekce jazyka
 
@@ -108,6 +108,7 @@ Aplikace je naprogramovaná s využitím více vláken. Jedno vlákno se stará 
 ## Uživatelský manuál
 ### Instalace
 Zdrojové kódy je možné stáhnout z GitHub repozitáře [zde](https://github.com/elPytel/YouTube_video_downloader). Pro instalaci na Linuxových strojích lze využít Bashový script uložený v adresáři Python. Po jeho spuštění se nainstalují všechny potřebné knihovny pro spuštění programu napsaného v jazyce Python.
+
 ### Ovládání
 Aplikace disponuje pouze terminálovým rozhraním. Jednotlivé volby programu se zadávají pomocí přepínačů při spuštění. Jejich zpracování je provedeno pomocí standardního modulu **argparse**, díky tomu je vstup poměrně robustní a nezáleží na pořadí zadaných přepínačů. Ovládání aplikace je v jazyce Angličtina.
 Výpis z konzole pro volbu *-h* "help":
@@ -168,6 +169,8 @@ Done downloading, now converting ...
 Downloading transcript...
 Downloading is finished.
 ```
+
+Aplikace se ukončuje zmáčknutím písmene "q" (quit). Po je zmáčknutí přejde do stavu vypínání, kdy se dokončí stahování posledního videa a jeho převod do .wav. Následně se program zavře.
 
 ### Další jazyky
 Jazyk se vybírá pomocí dvoupísmenného kódu ISO 639-1. Seznam kódů k jednotlivým jazykům: [zde](https://www.science.co.il/language/Codes.php). Pro přidání dalšího jazyka do aplikace je zapotřebí stáhnout wordlist ve formátů .txt a kódování UTF-8, ze kterého se budou generovat náhodná slovní spojení a ten uložit do adresáře **dict/**. Dále je potřeba aktualizovat konfigurační soubor **Python/languages.json**.
