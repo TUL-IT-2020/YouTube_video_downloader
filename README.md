@@ -1,9 +1,23 @@
 # YouTube_video_downloader
-## Tvorba trénovacích dat pro strojové učení ze záznamů na Youtube
 
 ## Titulní strana
+### Tvorba trénovacích dat pro strojové učení ze záznamů na Youtube
+**Ročníkový projekt**
 
 ## Zadání
+
+## Abstrakt
+Projekt se zabývá problematikou vytěžování audio dat na platformě YouTube. Nahrávky jsou stahovány za účelem trénování neuronových sítí pro strojový přepis řeči na text. Práce představuje metody k prohledávání YouTube a stahovaní vhodných videí s titulky. Zaměřuje se také na implementaci těchto metod a následnou analýzu stažených nahrávek. Cílem bylo nasbírat dostatečné množství dat pro rozhodnutí, zda a za jakých podmínek je YouTube v praxi vhodným kandidátem pro použití jako zdroje těchto dat.
+
+### Klíčová slova:
+ročníkový projekt, YouTube, videa, titulky, vytěžování dat
+
+## Abstract
+
+The project deals with the issue of audio data extraction on the YouTube platform. The recordings are downloaded for the purpose of training neural networks for machine transcription of speech to text. The work presents methods for searching YouTube and downloading of suitable videos with subtitles. It also focuses on the implementation of these methods and the subsequent analysis of downloaded recordings. The goal was to gather enough information to decide if and under what conditions could be YouTube used as source of this type of data.
+
+### Keywords:
+term project, YouTube, videos, captions, data mining
 
 ## Úvod
 Cílem mé práce bylo provést studii proveditelnost pro aplikaci, jenž by automaticky stahovala videa s titulky z webové platformy YouTube. 
@@ -18,6 +32,33 @@ Má práce spočívala ve vytvoření programu, který po konfiguraci a zadání
 - převod videa na pouhý audio záznam
 
 ## Využité nástroje:
+### Přímé parsování dat z webu YouTube
+Každá webová stránka YouTube s videem obsahuje v sobě dva .json dokumenty. První přesahuje 4k řádků a ten druhý 23k. Z nich je možné získat velké množství informací. Například všechny dostupné formáty videa k přehrání jsou zaznamenány ve vnořeném dokumentu „streamingData“ v poli „formats“.
+
+Z hlediska informací o videu je zajímavý dokument „videoDetails“ nacházející se v prvním z těch dokumentů. Zde je formát reprezentace dat:
+
+```JSON
+"videoDetails": {
+	"videoId",
+	"title",
+	"lengthSeconds",
+	"keywords": [],
+	"channelId",
+	"isOwnerViewing": bool,
+	"shortDescription": string,
+	"isCrawlable": bool,
+	"thumbnail": {},
+	"allowRatings" bool,
+	"viewCount",
+	"author": string,
+	"isPrivate": bool,
+	"isUnpluggedCorpus": bool,
+	"isLiveContent": bool
+}
+```
+
+Dokumenty dále obsahují nespočet informací včetně komentářů pod videem.
+
 ### Metody TDD & extrémního programování
 Testy řízené programování. Zde bylo využito knihovny [pytest](#pytest). Ve výsledku je aplikace pokryta testy pouze z nějakých 30%. To sice není mnoho, ale testují se základní funkce a logika aplikace. Pro větší pokrytí by bylo potřeba vytvoření mock tříd pro integrační testy komunikace programu s YouTube.
 
@@ -34,7 +75,13 @@ Pro vyhledávání videí byla použita knihovna [youtubesearchpython](#youtubes
 Jazyk z jednotlivých textů aplikace rozpoznává s využitím modulu [langdetect](#langdetect). Jeho velkou výhodou je jednoduché použití. Pro detekci jazyka stačí zavolat funkci `langdetect.detect_langs(text)` a ta vrátí list všech možných detekovaných jazyků s procentuální pravděpodobností.
 
 ### Práce s titulky
-Po experimentování s několika knihovnami určenými pro práci s YouTube titulky vyvstala knihovna [youtube_transcript_api](#youtube_transcript_api) jako ideální volba. Zejména díky snadnému dotazování na seznam jazyků použitých titulků a možnost stáhnutí dat jak ve formátu s časovou značkou, tak i čistě jako pouhý text. V obou případech je výstup uložen do souboru .txt (prostý text). Zde jiné knihovny umožňovali uložení pouze v proprietárních formátech, jenž byli vyhodnoceny jako nevhodné s ohledem pro další zpracování. 
+Po experimentování s několika knihovnami určenými pro práci s YouTube titulky vyvstala knihovna [youtube_transcript_api](#youtube_transcript_api) jako ideální volba. Zejména díky snadnému dotazování na seznam jazyků použitých titulků a možnost stáhnutí dat jak ve formátu s časovou značkou, tak i čistě jako pouhý text. V obou případech je výstup uložen do souboru .txt (prostý text). Zde jiné knihovny umožňovali uložení pouze v proprietárních formátech, jenž byli vyhodnoceny jako nevhodné s ohledem pro další zpracování. Další dostupné formáty:
+
+-   .vtt - „Web Video Text Track” je formát titulků oblíbený hlavně na webu a to díky podpoře HTML5. Každý dílčí záznam se skládá z indexu záznamu, času začátku a konce vyobrazení a textu k zobrazení. Oddělené jsou novým řádkem.
+-   .ttml - „Timed Text Markup Language“ textový formát s časovaný značkami. Jde o další formát pro použití zejména na webu. Data jsou uložena s HTML formátovacími značkami jako jsou `<div>`, `<p>`, `<span>`.
+-   srv3, srv2, srv1 - YouTube proprietární formát titulků.
+
+Jejich použití by přineslo nevýhodu potřeby další úrovně preparace informací, která by odstranila jim specifické formátování.
 
 ### Stahování videí
 To je zajištěno funkcionalitami v modulu [yt_dlp](#yt_dlp). Původně byl vnitřní algoritmus aplikace postaven na knihovně [youtube-dl](https://github.com/ytdl-org/youtube-dl), ale YouTube nejspíše nebyl smířen s jejím velkým rozšířením pro automatické stahování videí a proto zavedl opatření, která omezila rychlost stahování na ~300kbps, která je pro získávaní velkého objemu dat naprosto nepoužitelná. Tento problém naštěstí obchází výše zmíněná knihovna yt_dlp a díky tomu že je forkem youtube-dl (vychází z jejích zdrojových kódů), tak se při přechodu ani nemění aplikační interface a je možné použít všechny funkce tak jako by se jednalo o původní knihovnu. 
@@ -59,8 +106,7 @@ Výhodou tohoto řešení by bylo opakované využití záznamů z prvního krok
 Při implementaci nastalo rovnou několik nečekaný problémů:
 1. při analýze dat
 
-Když byl dokončen kód k prohledávání YouTube a ukládání záznamů o 
-videích. A část skriptů pro práci s youtube-dl byla rozpracována do takové úrovně, že se již podařilo stahovat jak záznam videa převedeného do formátu .wav, tak i titulky. 
+Když byl dokončen kód k prohledávání YouTube a ukládání záznamů o videích. A část skriptů pro práci s youtube-dl byla rozpracována do takové úrovně, že se již podařilo stahovat jak záznam videa převedeného do formátu .wav, tak i titulky. 
 Program byl nechán běžet přes víkend a zvládl stáhnout něco přes 200k záznamů. Při jejich podrobnějším prozkoumání byl zvolen jazyk Čeština pro snadnou validaci dat. Počet vyfiltrovaných videí splňujících kriterium českých titulek byl přibližně ~350, to se nejevilo zas tak zle, jenže u žádného z nich se nevyskytoval český název, co více, tak naprostá většina z nich měla názvy v úplně cizích abecedách. 
 Co říci, do algoritmu byla vložena větší naději na úspěch. Problém byl patrně v tom, že youtube algoritmus si pamatoval všechna předchozí dotazování a při prohledávání do hloubky, padal čím dál tím víc do zaječí nory. 
 
@@ -141,11 +187,11 @@ Pokročilá volba s angličtinou:
 $ python3 main.py -v -d -l EN -w 4 -i 100
 ```
 Provede se nastavení: 
-- ***verbose*** pro podrobnější výpisy do konzole
-- ***debug*** přidání debugovacích hlášení
-- ***EN*** pro vyhledávání se zvolí angličtina
-- ***words***, počet náhodně vygenerovaných slov bude 4
-- ***iterations***, počet vyhodnocených výsledků každého dotazu bude 100
+- ***verbose*** - podrobnější výpisy do konzole
+- ***debug*** - přidání debugovacích hlášení
+- ***EN*** - vyhledávání se zvolí angličtina
+- ***words*** - počet náhodně vygenerovaných slov bude 4
+- ***iterations*** - počet vyhodnocených výsledků každého dotazu bude 100
 
 Vzorový výstup do konzole:
 ```Bash
@@ -218,10 +264,18 @@ Pro Slovenštinu byl naneštěstí zvolen nevhodný word list, který obsahoval 
 Často se v příkladech kdy nesedí jazyk videa k jeho názvu objevují strojově generované titulky, které nejsou příliš dobré a jejich existence rozhodování algoritmu mátla.
 
 ## Závěr
-V rámci mé práce jsem dospěl k závěru, že YouTube jako zdroj dat pro vytěžování lze použít. A to za předpokladu, že za touto aplikací, bude ještě sedět člověk, který provede finální verifikaci, zda jsou data dobře rozpoznaná. Oproti jinému přístupu přináší tu výhodu, že člověku odpadá práce s vyhledáváním videí a jejich manuální převod do žádaného formátu. U aplikace také lze očekávat, že čím více je hledaný jazyk rozšířen, tím vyšší bude nejen rychlost hledání videí, ale i úspěšnost jejich automatické anotace. 
+V rámci mé práce jsem dospěl k závěru, že YouTube jako zdroj dat pro vytěžování lze použít. A to za předpokladu, že za touto aplikací, bude ještě sedět člověk, který provede finální verifikaci, zda jsou data dobře rozpoznána. Oproti jinému přístupu přináší tu výhodu, že člověku odpadá práce s vyhledáváním videí a jejich manuální převod do žádaného formátu. U aplikace také lze očekávat, že čím více je hledaný jazyk rozšířen, tím vyšší bude nejen rychlost hledání videí, ale i úspěšnost jejich automatické anotace.
 
 ### Možné rozšíření do budoucna
-Přidání detekce jazyka ze zvukové stopy. Grafická nadstavba konzole. Vícevláknová implementace části kódu dedikovaného pro stahování a zpracování videí pro urychlení běhu kódu na vícevláknových platformách. Možnost upravit hranici rozpoznání na bázi jednotlivých jazyků.
+Aplikaci je možné v budoucnu rozšířit o grafická nadstavba konzole, která by usnadnila ovládání pro méně technicky znalé typy.
+
+Zajímavá možnost by byla také vícevláknová reimplementace části kódu dedikovaného pro stahování a zpracování videí pro urychlení běhu kódu na vícevláknových platformách.
+
+Lepší výtěžnosti programu by mohla být dosaženo při úpravě word listů pro generování vyhledávaných řetězců slov. Zde se nabízí použít seznam setříděný podle četnosti výskytu slov, ze kterého by byli odstraněny stop slova. Tedy výrazy, které nenesou význam a často se opakují napříč jazyky.
+
+Zdaleka nejpodstatnějším rozšíření aplikace by bylo přidání detekce jazyka ze zvukové stopy. To má potenciál přinést násobné zlepšení oproti dosavadním výsledků na hůře anotovaných jazycích, ale předpokládá existenci detekčního algoritmu (neuronové sítě) vytrénovaného pro rozpoznání specifického jazyka.
+
+Mezi další rozšíření by mohla také patřit možnost upravit hranici rozpoznání na bázi jednotlivých jazyků.
 
 ## Zdroje
 Při programování jsem čerpal z oficiální dokumentace jednotlivých Pythonovských modulů, jejich příslušných GitHubových repozitářů a StackOverflow.
