@@ -45,8 +45,3 @@ jobs:
         run: |
           cd Python
           if [ -f test.sh ]; then ./test.sh; fi
-          
-      - name: Clean
-        run: |
-          cd Python
-          ./clean.sh
