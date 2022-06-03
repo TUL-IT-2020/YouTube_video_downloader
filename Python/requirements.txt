@@ -1,5 +1,6 @@
 pytest
 pylint
+coverage
 yt-dlp
 langdetect
 youtube-search-python
