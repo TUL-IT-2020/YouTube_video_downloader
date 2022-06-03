@@ -38,12 +38,15 @@ jobs:
           
       - name: Test with pytest
         run: |
-          if [ -d tests ] || [ -d test ]; then python -m pytest; fi
+          cd Python
+          if [ -d tests ] || [ -d test ]; then python -m py.test; fi
           
       - name: Calculate covarege
         run: |
+          cd Python
           if [ -f test.sh ]; then ./test.sh; fi
           
       - name: Clean
         run: |
+          cd Python
           ./clean.sh
