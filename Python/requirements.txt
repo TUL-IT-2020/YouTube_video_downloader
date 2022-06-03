@@ -1,0 +1,6 @@
+pytest
+pylint
+yt-dlp
+langdetect
+youtube-search-python
+youtube-transcript-api

@@ -1,9 +1,8 @@
 #!/bin/bash
 # By Pytel
 
-pip install yt-dlp
-pip install langdetect
-pip install youtube-search-python
-pip install youtube-transcript-api
+if [ -f requirements.txt ]; then 
+    pip install -r requirements.txt
+fi
 
 sudo apt install ffmpeg
