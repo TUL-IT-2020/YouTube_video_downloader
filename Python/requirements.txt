@@ -1,5 +1,6 @@
 pytest
 pylint
+covarage
 yt-dlp
 langdetect
 youtube-search-python
