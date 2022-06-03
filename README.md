@@ -1,3 +1,5 @@
+![Tests](https://github.com/elPytel/YouTube_video_downloader/actions/workflows/main.yml/badge.svg)
+
 # YouTube_video_downloader
 
 ## Titulní strana
