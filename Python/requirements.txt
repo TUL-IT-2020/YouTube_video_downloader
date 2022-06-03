@@ -1,6 +1,6 @@
 pytest
 pylint
-covarage
+coverage
 yt-dlp
 langdetect
 youtube-search-python
